@@ -23,10 +23,12 @@ right_x = [0]
 right_y = [1]
 
 def plot(is_first):
-    plt.plot(left_x, left_y, "ro")
-    plt.plot(right_x, right_y, "go")
+    #plt.plot(left_x, left_y, "ro")
+    #plt.plot(right_x, right_y, "go")
+    plt.plot(current_left_x, current_left_y, "ro")
+    plt.plot(current_right_x, current_right_y, "go")
     plt.plot([W/2,-W/2,-W/2,W/2,W/2],[H/2,H/2,-H/2,-H/2,H/2], "b--")
-    if (is_first): plt.savefig("simulation.png")
+    if (not is_first): plt.savefig("simulation.png")
     plt.show()
 
 def collision_detection():
@@ -36,6 +38,8 @@ def robot_step():
     global current_right_x, current_right_y, current_left_x, current_left_y, is_left, x, y
     #randomly move a chamber one of four legal actions
     a = random.choice([2/pi, pi, (3*pi)/2, 2*pi])
+    dir = random.choice([0,1])
+    if (dir): a = -a
 
     if (is_left):   
         x = current_left_x + R * cos(a)
@@ -55,8 +59,8 @@ def random_walk():
         while (collision_detection()):
             robot_step()
 
-        right_x.append(x)
-        right_y.append(y) 
+        #right_x.append(x)
+        #right_y.append(y) 
         current_right_x = x 
         current_right_y = y
         is_left = 0        
@@ -68,8 +72,8 @@ def random_walk():
         while (collision_detection()):
             robot_step()
     
-        left_x.append(x)
-        left_y.append(y)
+        #left_x.append(x)
+        #left_y.append(y)
         current_left_x = x
         current_left_y = y
         is_left = 1
@@ -79,8 +83,8 @@ def simulation():
 
     for _ in range(10000):
         random_walk()
-        #plot(False)
+        plot(False)
     
-    plot(False)    
+    #plot(False)    
 
 simulation()
