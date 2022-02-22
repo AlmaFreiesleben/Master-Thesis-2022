@@ -9,7 +9,7 @@ public class Controller {
     public boolean checkCollision() { return false; }
 
     public void robotStep() {
-        
+        //TODO
     }
 
     public void randomWalk() {
