@@ -1,5 +1,6 @@
 import coppelia.IntW;
 import coppelia.IntWA;
+import coppelia.FloatW;
 import coppelia.remoteApi;
 
 public class Main
@@ -10,18 +11,21 @@ public class Main
         remoteApi sim = new remoteApi();
         sim.simxFinish(-1); // just in case, close all opened connections
         int clientID = sim.simxStart("127.0.0.1",19997,true,true,5000,5);
-        System.out.println("clientID: " + clientID);
         if (clientID!=-1)
         {
             System.out.println("Connected to remote API server");   
 
             // Now try to retrieve data in a blocking fashion (i.e. a service call):
-            IntWA objectHandles = new IntWA(1);
-            int ret=sim.simxGetObjects(clientID,sim.sim_handle_all,objectHandles,sim.simx_opmode_blocking);
-            if (ret==sim.simx_return_ok)
-                System.out.format("Number of objects in the scene: %d\n",objectHandles.getArray().length);
-            else
-                System.out.format("Remote API function call returned with error code: %d\n",ret);
+            IntW objectHandles = new IntW(1);
+            String[] joints = new String[]{"Left_joint", "Right_joint"};
+            int[] handles = new int[2];
+
+            for (int i = 0; i < joints.length; i++) {
+                sim.simxGetObjectHandle(clientID, joints[i], objectHandles, sim.simx_opmode_blocking);
+                handles[i] = objectHandles.getValue();
+            }
+
+            for (var h : handles) System.out.println(h);
                 
             try
             {
@@ -31,20 +35,9 @@ public class Main
             {
                 Thread.currentThread().interrupt();
             }
-    
-            // Now retrieve streaming data (i.e. in a non-blocking fashion):
-            long startTime=System.currentTimeMillis();
-            IntW mouseX = new IntW(0);
-            sim.simxGetIntegerParameter(clientID,sim.sim_intparam_mouse_x,mouseX,sim.simx_opmode_streaming); // Initialize streaming
-            while (System.currentTimeMillis()-startTime < 5000)
-            {
-                ret=sim.simxGetIntegerParameter(clientID,sim.sim_intparam_mouse_x,mouseX,sim.simx_opmode_buffer); // Try to retrieve the streamed data
-                if (ret==sim.simx_return_ok) // After initialization of streaming, it will take a few ms before the first value arrives, so check the return code
-                    System.out.format("Mouse position x: %d\n",mouseX.getValue()); // Mouse position x is actualized when the cursor is over CoppeliaSim's window
-            }
-            
-            // Now send some data to CoppeliaSim in a non-blocking fashion:
-            sim.simxAddStatusbarMessage(clientID,"Hello CoppeliaSim!",sim.simx_opmode_oneshot);
+
+            float degrees = 180;
+            sim.simxSetJointTargetPosition(clientID, handles[0], degrees, sim.simx_opmode_oneshot_wait);
 
             // Before closing the connection to CoppeliaSim, make sure that the last command sent out had time to arrive. You can guarantee this with (for example):
             IntW pingTime = new IntW(0);
