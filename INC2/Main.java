@@ -1,6 +1,4 @@
 import coppelia.IntW;
-import coppelia.IntWA;
-import coppelia.FloatW;
 import coppelia.remoteApi;
 
 public class Main
@@ -25,19 +23,18 @@ public class Main
                 handles[i] = objectHandles.getValue();
             }
 
+            sim.simxStartSimulation(clientID,sim.simx_opmode_blocking);
+
             for (var h : handles) System.out.println(h);
                 
-            try
-            {
-                Thread.sleep(2000);
-            }
-            catch(InterruptedException ex)
-            {
-                Thread.currentThread().interrupt();
-            }
+            sleep(2000);
 
             float degrees = 180;
-            sim.simxSetJointTargetPosition(clientID, handles[0], degrees, sim.simx_opmode_oneshot_wait);
+            sim.simxSetJointTargetPosition(clientID, handles[1], degrees, sim.simx_opmode_oneshot_wait);
+            
+            sleep(10000);
+            
+            sim.simxStopSimulation(clientID,sim.simx_opmode_blocking);
 
             // Before closing the connection to CoppeliaSim, make sure that the last command sent out had time to arrive. You can guarantee this with (for example):
             IntW pingTime = new IntW(0);
@@ -49,6 +46,17 @@ public class Main
         else
             System.out.println("Failed connecting to remote API server");
         System.out.println("Program ended");
+    }
+
+    public static void sleep(int millis) {
+        try
+            {
+                Thread.sleep(millis);
+            }
+            catch(InterruptedException ex)
+            {
+                Thread.currentThread().interrupt();
+            }
     }
 }
             
