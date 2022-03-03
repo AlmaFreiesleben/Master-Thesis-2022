@@ -15,8 +15,8 @@ public class Main
 
             // Now try to retrieve data in a blocking fashion (i.e. a service call):
             IntW objectHandles = new IntW(1);
-            String[] joints = new String[]{"Left_joint", "Right_joint"};
-            int[] handles = new int[2];
+            String[] joints = new String[]{"Floor", "Left_ForceSensor", "Left_chamber", "Left_joint", "Cylinder", "Right_joint", "Right_chamber", "Right_ForceSensor"};
+            int[] handles = new int[8];
 
             for (int i = 0; i < joints.length; i++) {
                 sim.simxGetObjectHandle(clientID, joints[i], objectHandles, sim.simx_opmode_blocking);
@@ -27,13 +27,11 @@ public class Main
                 
             sleep(2000);
 
-            // fix chamber to surface
-            // sim.simxSetModelProperty(clientID, handles[1], sim.sim_modelproperty_not_dynamic, sim.simx_opmode_blocking);
+            // Run the random walk algorithm
+            TestController c = new TestController(clientID, true, sim, handles); 
+            c.randomWalk(3);
 
-            float degrees = 180;
-            sim.simxSetJointTargetPosition(clientID, handles[0], degrees, sim.simx_opmode_blocking);
-            
-            sleep(10000);
+            sleep(2000);
             
             sim.simxStopSimulation(clientID,sim.simx_opmode_blocking);
 
@@ -43,21 +41,19 @@ public class Main
 
             // Now close the connection to CoppeliaSim:   
             sim.simxFinish(clientID);
+        } else { 
+            System.out.println("Failed connecting to remote API server"); 
         }
-        else
-            System.out.println("Failed connecting to remote API server");
+
         System.out.println("Program ended");
     }
 
     public static void sleep(int millis) {
-        try
-            {
-                Thread.sleep(millis);
-            }
-            catch(InterruptedException ex)
-            {
-                Thread.currentThread().interrupt();
-            }
+        try {
+            Thread.sleep(millis);
+        } catch(InterruptedException ex) {
+            Thread.currentThread().interrupt();
+        }
     }
 }
             
