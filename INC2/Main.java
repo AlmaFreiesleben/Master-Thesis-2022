@@ -8,7 +8,7 @@ public class Main
         System.out.println("Program started");
         remoteApi sim = new remoteApi();
         sim.simxFinish(-1); // just in case, close all opened connections
-        int clientID = sim.simxStart("127.0.0.1",19997,true,true,5000,5);
+        int clientID = sim.simxStart("127.0.0.1",19999,true,true,5000,5);
         if (clientID!=-1)
         {
             System.out.println("Connected to remote API server");   
@@ -24,13 +24,14 @@ public class Main
             }
 
             sim.simxStartSimulation(clientID,sim.simx_opmode_blocking);
-
-            for (var h : handles) System.out.println(h);
                 
             sleep(2000);
 
+            // fix chamber to surface
+            // sim.simxSetModelProperty(clientID, handles[1], sim.sim_modelproperty_not_dynamic, sim.simx_opmode_blocking);
+
             float degrees = 180;
-            sim.simxSetJointTargetPosition(clientID, handles[1], degrees, sim.simx_opmode_oneshot_wait);
+            sim.simxSetJointTargetPosition(clientID, handles[0], degrees, sim.simx_opmode_blocking);
             
             sleep(10000);
             
