@@ -29,7 +29,7 @@ public class Main
 
             // Run the random walk algorithm
             TestController c = new TestController(clientID, true, sim, handles); 
-            c.randomWalk(3);
+            c.randomWalk(1);
 
             sleep(2000);
             
