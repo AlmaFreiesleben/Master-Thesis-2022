@@ -15,7 +15,6 @@ public class TestController {
 
     public void randomWalk(int step) {
         int degreeOfMovement = new Random().nextInt(361);
-        //int degreeOfMovement = 180;
         sim.simxSetJointTargetPosition(clientID, leftJoint, degreeOfMovement, sim.simx_opmode_blocking);
     }  
 }

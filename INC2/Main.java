@@ -15,8 +15,8 @@ public class Main
 
             // Now try to retrieve data in a blocking fashion (i.e. a service call):
             IntW objectHandles = new IntW(1);
-            String[] joints = new String[]{"Floor", "Left_ForceSensor", "Left_chamber", "Left_joint", "Cylinder", "Right_joint", "Right_chamber", "Right_ForceSensor"};
-            int[] handles = new int[8];
+            String[] joints = new String[]{"Floor", "Left_Dummy_1", "Left_Dummy_2", "Left_chamber", "Left_joint", "Cylinder", "Right_joint", "Right_chamber", "Right_Dummy_1", "Right_Dummy_2"};
+            int[] handles = new int[10];
 
             for (int i = 0; i < joints.length; i++) {
                 sim.simxGetObjectHandle(clientID, joints[i], objectHandles, sim.simx_opmode_blocking);
@@ -28,8 +28,8 @@ public class Main
             sleep(2000);
 
             // Run the random walk algorithm
-            TestController c = new TestController(clientID, true, sim, handles); 
-            c.randomWalk(1);
+            Controller c = new Controller(clientID, true, sim, handles); 
+            c.randomWalk(4);
 
             sleep(2000);
             
