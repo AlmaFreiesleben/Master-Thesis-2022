@@ -12,13 +12,12 @@ public class Controller {
     private int floor;
     private int leftDummy1;
     private int leftDummy2;
-    private int leftChamber;
     private int leftJoint;
-    private int cylinder;
     private int rightJoint;
-    private int rightChamber;
     private int rightDummy1;
     private int rightDummy2;
+    private int leftJointOdometry = 0;
+    private int rightJointOdometry = 0;
     
     public Controller(int clienID, boolean is_left_fixed, remoteApi sim, int[] handles) {
         this.clientID = clienID;
@@ -27,11 +26,8 @@ public class Controller {
         this.floor = handles[0];
         this.leftDummy1 = handles[1];
         this.leftDummy2 = handles[2];
-        this.leftChamber = handles[3];
         this.leftJoint = handles[4];
-        this.cylinder = handles[5];
         this.rightJoint = handles[6];
-        this.rightChamber = handles[7];
         this.rightDummy1 = handles[8];
         this.rightDummy2 = handles[8];
     }
@@ -42,20 +38,21 @@ public class Controller {
         }
     }
     
-    private void randomWalk() {        
+    private void randomWalk() { 
         if (is_left_fixed) {
             robotStep(leftJoint, leftDummy1, leftDummy2);
 
-            while (checkCollision(leftDummy1)) {
+            /*while (checkCollision(leftDummy1)) {
                 robotStep(leftJoint, leftDummy1, leftDummy2);
-            }
+            }*/
+
             is_left_fixed = false;        
         } else {
             robotStep(rightJoint, rightDummy1, rightDummy2);
     
-            while (checkCollision(rightDummy1)) {
+            /*while (checkCollision(rightDummy1)) {
                 robotStep(rightJoint, rightDummy1, rightDummy2);
-            }
+            }*/
 
             is_left_fixed = true;
         }
@@ -83,20 +80,40 @@ public class Controller {
 
     private void freeChamberFromFloor(int dummy1, int dummy2) {
         sim.simxSetObjectParent(clientID, dummy2, dummy1, true, sim.simx_opmode_blocking);
+
         FloatWA position = new FloatWA(3);
-        sim.simxGetObjectPosition(clientID, dummy1, -1, position, sim.simx_opmode_streaming);
-        sim.simxSetObjectPosition(clientID, dummy2, -1, position, sim.simx_opmode_oneshot);
+        sim.simxGetObjectPosition(clientID, dummy1, -1, position, sim.simx_opmode_blocking);
+
+        sim.simxSetObjectPosition(clientID, dummy2, -1, position, sim.simx_opmode_blocking);
+    }
+
+    private float generateDegreeOfMovement() {
+        float randRadian = (float) (Math.toRadians(new Random().nextInt(361)));
+        float degreeOfMovement;
+
+        if (is_left_fixed) {
+            leftJointOdometry += randRadian % 360;
+            degreeOfMovement = leftJointOdometry;
+        } else {
+            rightJointOdometry += randRadian % 360;
+            degreeOfMovement = rightJointOdometry;
+        }    
+        
+        boolean direction = new Random().nextBoolean();
+
+        return (direction) ? degreeOfMovement : -degreeOfMovement;
     }
 
     private void robotStep(int joint, int dummy1, int dummy2) {
-        int degreeOfMovement = new Random().nextInt(361);
-        boolean direction = new Random().nextBoolean();
-        degreeOfMovement = (direction) ? degreeOfMovement : -degreeOfMovement;
+        float degreeOfMovement = generateDegreeOfMovement();
 
         fixChamberToFloor(dummy2);
+        sleep(2000);
+
         sim.simxSetJointTargetPosition(clientID, joint, degreeOfMovement, sim.simx_opmode_blocking);
+        sleep(2000);
+
         freeChamberFromFloor(dummy1, dummy2);
-        
         sleep(2000);
     }
 
