@@ -29,7 +29,7 @@ public class Controller {
         this.leftJoint = handles[4];
         this.rightJoint = handles[6];
         this.rightDummy1 = handles[8];
-        this.rightDummy2 = handles[8];
+        this.rightDummy2 = handles[9];
     }
 
     public void randomWalk(int steps) {
