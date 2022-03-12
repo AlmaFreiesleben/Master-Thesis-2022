@@ -88,23 +88,6 @@ public class Controller {
         sim.simxSetObjectPosition(clientID, dummy2, -1, position, sim.simx_opmode_blocking);
     }
 
-    private float generateDegreeOfMovement() {
-        float randRadian = (float) (Math.toRadians(new Random().nextInt(361)));
-        float degreeOfMovement;
-
-        if (is_left_fixed) {
-            leftJointOdometry += randRadian % 360;
-            degreeOfMovement = leftJointOdometry;
-        } else {
-            rightJointOdometry += randRadian % 360;
-            degreeOfMovement = rightJointOdometry;
-        }    
-        
-        boolean direction = new Random().nextBoolean();
-
-        return (direction) ? degreeOfMovement : -degreeOfMovement;
-    }
-
     private void robotStep(int joint, int dummy1, int dummy2) {
         FloatW jointPos = new FloatW(0);
         float increment = (float) (Math.toRadians(new Random().nextInt(361)));

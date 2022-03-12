@@ -19,15 +19,23 @@ public class Controller2 {
         this.rightChamber = new Chamber(handles[6], handles[8], handles[9]);
     }
 
-    private void randomWalk() { 
+    public void randomWalk() { 
         while (true) {
             fixChamberToFloor(leftChamber);
+            sleep(1000);
             robotStep(leftChamber);
+            sleep(1000);
             freeChamberFromFloor(leftChamber);
 
+            sleep(1000);
+
             fixChamberToFloor(rightChamber);
+            sleep(1000);
             robotStep(rightChamber);
+            sleep(1000);
             freeChamberFromFloor(rightChamber);
+
+            sleep(1000);
         }
     }
 
@@ -51,5 +59,13 @@ public class Controller2 {
 
         sim.simxGetJointPosition(clientID, chamber.getJoint(), jointPos, sim.simx_opmode_blocking);
         sim.simxSetJointTargetPosition(clientID, chamber.getJoint(), degreeOfMovement, sim.simx_opmode_blocking);
+    }
+
+    private void sleep(int millis) {
+        try {
+            Thread.sleep(millis);
+        } catch(InterruptedException ex) {
+            Thread.currentThread().interrupt();
+        }
     }
 }

@@ -1,7 +1,3 @@
-import java.util.Properties;
-
-import com.apple.laf.ClientPropertyApplicator.Property;
-
 public class Chamber {
     private int joint;
     private int dummy1;
