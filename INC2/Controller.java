@@ -1,6 +1,7 @@
 import coppelia.remoteApi;
 import java.util.Random;
 import coppelia.FloatWA;
+import coppelia.FloatW;
 
 public class Controller {
 
@@ -105,16 +106,18 @@ public class Controller {
     }
 
     private void robotStep(int joint, int dummy1, int dummy2) {
-        float degreeOfMovement = generateDegreeOfMovement();
+        FloatW jointPos = new FloatW(0);
+        float increment = (float) (Math.toRadians(new Random().nextInt(361)));
+        float degreeOfMovement = jointPos.getValue() + increment;
 
         fixChamberToFloor(dummy2);
-        sleep(2000);
+        sleep(1000);
 
         sim.simxSetJointTargetPosition(clientID, joint, degreeOfMovement, sim.simx_opmode_blocking);
-        sleep(2000);
+        sleep(1000);
 
         freeChamberFromFloor(dummy1, dummy2);
-        sleep(2000);
+        sleep(1000);
     }
 
     private void sleep(int millis) {
