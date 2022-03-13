@@ -59,7 +59,8 @@ public class Controller2 {
         float increment = (float) (Math.toRadians(new Random().nextInt(361)));
         float degreeOfMovement = jointPos.getValue() + increment;
 
-        boolean hasCollided = checkCollision(nonMovingChamber, degreeOfMovement);
+        boolean hasCollided = checkCollision(nonMovingChamber, increment);
+
         if (!hasCollided) {
             sim.simxGetJointPosition(clientID, movingChamber.getJoint(), jointPos, sim.simx_opmode_blocking);
             sim.simxSetJointTargetPosition(clientID, movingChamber.getJoint(), degreeOfMovement, sim.simx_opmode_blocking);
