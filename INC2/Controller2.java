@@ -10,6 +10,8 @@ public class Controller2 {
     private int floor;
     private Chamber leftChamber;
     private Chamber rightChamber;
+    private double H = 4.8; // 20 cm is removed from floor size (5x5) to account for the chamber size.
+    private double W = 4.8; // 20 cm is removed from floor size (5x5) to account for the chamber size.
     
     public Controller2(int clienID, remoteApi sim, int[] handles) {
         this.clientID = clienID;
@@ -23,7 +25,7 @@ public class Controller2 {
         while (true) {
             fixChamberToFloor(leftChamber);
             sleep(1000);
-            robotStep(leftChamber);
+            robotStep(leftChamber, rightChamber);
             sleep(1000);
             freeChamberFromFloor(leftChamber);
 
@@ -31,7 +33,7 @@ public class Controller2 {
 
             fixChamberToFloor(rightChamber);
             sleep(1000);
-            robotStep(rightChamber);
+            robotStep(rightChamber, leftChamber);
             sleep(1000);
             freeChamberFromFloor(rightChamber);
 
@@ -52,13 +54,28 @@ public class Controller2 {
         sim.simxSetObjectPosition(clientID, chamber.getDummy1(), -1, position, sim.simx_opmode_blocking);
     }
 
-    private void robotStep(Chamber chamber) {
+    private void robotStep(Chamber movingChamber, Chamber nonMovingChamber) {
         FloatW jointPos = new FloatW(0);
         float increment = (float) (Math.toRadians(new Random().nextInt(361)));
         float degreeOfMovement = jointPos.getValue() + increment;
 
-        sim.simxGetJointPosition(clientID, chamber.getJoint(), jointPos, sim.simx_opmode_blocking);
-        sim.simxSetJointTargetPosition(clientID, chamber.getJoint(), degreeOfMovement, sim.simx_opmode_blocking);
+        boolean hasCollided = checkCollision(nonMovingChamber, degreeOfMovement);
+        if (!hasCollided) {
+            sim.simxGetJointPosition(clientID, movingChamber.getJoint(), jointPos, sim.simx_opmode_blocking);
+            sim.simxSetJointTargetPosition(clientID, movingChamber.getJoint(), degreeOfMovement, sim.simx_opmode_blocking);
+        }
+    }
+
+    private boolean checkCollision(Chamber nonMovingChamber, float degreeOfMovement) {
+        FloatWA position = new FloatWA(3);       
+        sim.simxGetObjectPosition(clientID, nonMovingChamber.getDummy1(), -1, position, sim.simx_opmode_blocking);
+        double currX = position.getArray()[0];
+        double currY = position.getArray()[1];
+
+        double x = currX + 1 * Math.cos(degreeOfMovement);
+        double y = currY + 1 * Math.sin(degreeOfMovement);
+
+        return x > W/2 || y > H/2 || x < -(W/2) || y < -(H/2); 
     }
 
     private void sleep(int millis) {
