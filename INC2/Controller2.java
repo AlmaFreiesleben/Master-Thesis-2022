@@ -10,6 +10,8 @@ public class Controller2 {
     private int floor;
     private Chamber leftChamber;
     private Chamber rightChamber;
+    private double H = 4; // 100 cm is removed from floor size (5x5) to account for the chamber size.
+    private double W = 4; // 100 cm is removed from floor size (5x5) to account for the chamber size.
     
     public Controller2(int clienID, remoteApi sim, int[] handles) {
         this.clientID = clienID;
@@ -57,8 +59,24 @@ public class Controller2 {
         float increment = (float) (Math.toRadians(new Random().nextInt(361)));
         float degreeOfMovement = jointPos.getValue() + increment;
 
-        sim.simxGetJointPosition(clientID, movingChamber.getJoint(), jointPos, sim.simx_opmode_blocking);
-        sim.simxSetJointTargetPosition(clientID, movingChamber.getJoint(), degreeOfMovement, sim.simx_opmode_blocking);
+        boolean hasCollided = checkCollision(nonMovingChamber, degreeOfMovement);
+
+        if (!hasCollided) {
+            sim.simxGetJointPosition(clientID, movingChamber.getJoint(), jointPos, sim.simx_opmode_blocking);
+            sim.simxSetJointTargetPosition(clientID, movingChamber.getJoint(), degreeOfMovement, sim.simx_opmode_blocking);
+        }
+    }
+
+    private boolean checkCollision(Chamber nonMovingChamber, float degreeOfMovement) {
+        FloatWA position = new FloatWA(3);       
+        sim.simxGetObjectPosition(clientID, nonMovingChamber.getDummy1(), -1, position, sim.simx_opmode_blocking);
+        double currX = position.getArray()[0];
+        double currY = position.getArray()[1];
+
+        double x = currX + 1 * Math.cos(degreeOfMovement);
+        double y = currY + 1 * Math.sin(degreeOfMovement);
+
+        return x > W/2 || y > H/2 || x < -(W/2) || y < -(H/2); 
     }
 
     private void sleep(int millis) {
