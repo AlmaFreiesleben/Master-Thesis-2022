@@ -1,4 +1,4 @@
-# Path planning of underwater hull cleaning robot, Lappa, on a 2D hull with 3D obstacle avoidance
+# Complete Coverage Path Planning of underwater hull cleaning robot, Lappa, on intricate hulls
 
 ## Problem statement 
 Hull cleaning is the process of removing fouling from boat hulls, which can be performed as dry dock cleaning and in-water cleaning. As soon as a boat is put into water, it is exposed to fouling, which causes several disadvantages both for the trade shipping industry and for leisure boats, e.g., by slowing down the boat's speed. Using robots for hull cleaning enables cleaning of the boat while in water, which ideally fixes the problem of maintaining the optimal speed of the boat, delays the need for getting the boat out of the water to do dry dock cleaning, and limits the use of anti-fouling paint. The extensive use of anti-fouling paint within hull cleaning today in itself brings a lot of environmental disadvantages since it is composed of highly toxic chemicals.
