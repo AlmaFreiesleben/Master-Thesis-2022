@@ -1,36 +1,113 @@
+import coppelia.remoteApi;
+import java.util.Random;
+import coppelia.FloatWA;
+import coppelia.FloatW;
+
 public class Controller {
 
+    private int clientID; 
     private boolean is_left_fixed;
+    private remoteApi sim;
+    private double H = 4.8; // 20 cm is removed from floor size (5x5) to account for the chamber size.
+    private double W = 4.8; // 20 cm is removed from floor size (5x5) to account for the chamber size.
+    private int floor;
+    private int leftDummy1;
+    private int leftDummy2;
+    private int leftJoint;
+    private int rightJoint;
+    private int rightDummy1;
+    private int rightDummy2;
+    private int leftJointOdometry = 0;
+    private int rightJointOdometry = 0;
     
-    public Controller(boolean is_left_fixed) {
+    public Controller(int clienID, boolean is_left_fixed, remoteApi sim, int[] handles) {
+        this.clientID = clienID;
         this.is_left_fixed = is_left_fixed;
+        this.sim = sim;
+        this.floor = handles[0];
+        this.leftDummy1 = handles[1];
+        this.leftDummy2 = handles[2];
+        this.leftJoint = handles[4];
+        this.rightJoint = handles[6];
+        this.rightDummy1 = handles[8];
+        this.rightDummy2 = handles[9];
     }
 
-    public boolean checkCollision() { return false; }
-
-    public void robotStep() {
-        
+    public void randomWalk(int steps) {
+        for (int i = 0 ; i < steps ; i++) {
+            randomWalk();
+        }
     }
-
-    public void randomWalk() {
+    
+    private void randomWalk() { 
         if (is_left_fixed) {
-            // Compute the joint to send to simulator
-            robot_step();
+            robotStep(leftJoint, leftDummy1, leftDummy2);
 
-            // Check for collision, if a collision has occured choose another action
-            while (collision_detection()) {
-                robot_step();
-            }
-            // Change chamber
+            /*while (checkCollision(leftDummy1)) {
+                robotStep(leftJoint, leftDummy1, leftDummy2);
+            }*/
+
             is_left_fixed = false;        
         } else {
-            robot_step();
+            robotStep(rightJoint, rightDummy1, rightDummy2);
     
-            while (collision_detection()) {
-                robot_step();
-            }
+            /*while (checkCollision(rightDummy1)) {
+                robotStep(rightJoint, rightDummy1, rightDummy2);
+            }*/
 
             is_left_fixed = true;
+        }
+    }
+
+    private boolean checkCollision(int dummy1) {
+        FloatWA position = getPositionOfChamber(dummy1);
+        double x = position.getArray()[0];
+        double y = position.getArray()[1];
+        return x > W/2 || y > H/2 || x < -(W/2) || y < -(H/2); 
+    }
+
+    private FloatWA getPositionOfChamber(int forceSensor) {
+        FloatWA position = new FloatWA(3);
+        
+        sim.simxGetObjectPosition(clientID, forceSensor, -1, position, sim.simx_opmode_streaming);
+        sleep(2000);
+
+        return position;
+    }
+
+    private void fixChamberToFloor(int dummy2) {
+        sim.simxSetObjectParent(clientID, dummy2, floor, true, sim.simx_opmode_blocking);
+    }
+
+    private void freeChamberFromFloor(int dummy1, int dummy2) {
+        sim.simxSetObjectParent(clientID, dummy2, dummy1, true, sim.simx_opmode_blocking);
+
+        FloatWA position = new FloatWA(3);
+        sim.simxGetObjectPosition(clientID, dummy1, -1, position, sim.simx_opmode_blocking);
+
+        sim.simxSetObjectPosition(clientID, dummy2, -1, position, sim.simx_opmode_blocking);
+    }
+
+    private void robotStep(int joint, int dummy1, int dummy2) {
+        FloatW jointPos = new FloatW(0);
+        float increment = (float) (Math.toRadians(new Random().nextInt(361)));
+        float degreeOfMovement = jointPos.getValue() + increment;
+
+        fixChamberToFloor(dummy2);
+        sleep(1000);
+
+        sim.simxSetJointTargetPosition(clientID, joint, degreeOfMovement, sim.simx_opmode_blocking);
+        sleep(1000);
+
+        freeChamberFromFloor(dummy1, dummy2);
+        sleep(1000);
+    }
+
+    private void sleep(int millis) {
+        try {
+            Thread.sleep(millis);
+        } catch(InterruptedException ex) {
+            Thread.currentThread().interrupt();
         }
     }
 }
