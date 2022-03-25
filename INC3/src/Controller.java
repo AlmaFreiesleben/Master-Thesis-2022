@@ -8,15 +8,17 @@ public class Controller {
     private int clientID; 
     private remoteApi sim;
     private int floor;
-    private Chamber leftChamber;
+    private int middle_joint;
     private Chamber rightChamber;
-    
+    private Chamber leftChamber;
+
     public Controller(int clienID, remoteApi sim, int[] handles) {
         this.clientID = clienID;
         this.sim = sim;
         this.floor = handles[0];
-        this.leftChamber = new Chamber(handles[4], handles[1], handles[2]);
-        this.rightChamber = new Chamber(handles[6], handles[8], handles[9]);
+        this.middle_joint = handles[1];
+        this.rightChamber = new Chamber(handles[2], handles[3], handles[4], handles[5]);
+        this.leftChamber = new Chamber(handles[6], handles[7], handles[8], handles[9]);
     }
 
     public void randomWalk() { 
@@ -55,9 +57,9 @@ public class Controller {
     private void robotStep(Chamber movingChamber, Chamber nonMovingChamber) {
         FloatW jointPos = new FloatW(0);
         float increment = (float) (Math.toRadians(new Random().nextInt(361)));
-        sim.simxGetJointPosition(clientID, nonMovingChamber.getJoint(), jointPos, sim.simx_opmode_blocking);
+        sim.simxGetJointPosition(clientID, nonMovingChamber.getJoint2(), jointPos, sim.simx_opmode_blocking);
         float degreeOfMovement = jointPos.getValue() + increment;
-        sim.simxSetJointTargetPosition(clientID, nonMovingChamber.getJoint(), degreeOfMovement, sim.simx_opmode_blocking);
+        sim.simxSetJointTargetPosition(clientID, nonMovingChamber.getJoint2(), degreeOfMovement, sim.simx_opmode_blocking);
     }
 
     private void sleep(int millis) {
