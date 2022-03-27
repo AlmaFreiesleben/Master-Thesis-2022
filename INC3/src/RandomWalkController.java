@@ -11,7 +11,7 @@ public class RandomWalkController extends Controller {
     // The four cleaning zones are hard-coded (A,B,C,D), the robot starts in A.
     // The "adjacency-graph" is hard-coded as well: A -> B -> C -> D.
     private char currentCleaningZone = 'A';
-    private HashMap<Character, Point3D> entries; // TODO: Make sure entries are correct
+    private HashMap<Character, Point3D> entries;
     private ArrayList<Point3D> coverage;
     private Point3D currentPositionLeftChamber;
     private Point3D currentPositionRightChamber;
@@ -40,25 +40,26 @@ public class RandomWalkController extends Controller {
     }
 
     private boolean randomWalk() {
-        // TODO: IMPLEMENT ACTUAL WALK -> use whatCleaningZone()
         while (!isCleaningZoneCovered(currentCleaningZone)) {
-            fixChamberToFloor(leftChamber);
-            sleep(1000);
-            robotStep(leftChamber);
-            sleep(1000);
-            freeChamberFromFloor(leftChamber);
-
-            sleep(1000);
-
-            fixChamberToFloor(rightChamber);
-            sleep(1000);
-            robotStep(rightChamber);
-            sleep(1000);
-            freeChamberFromFloor(rightChamber);
-
-            sleep(1000);
+            step(leftChamber, rightChamber);
+            step(rightChamber, leftChamber);
         }
         return true;
+    }
+
+    private void step(Chamber nonMoving, Chamber moving) {
+        fixChamberToFloor(nonMoving);
+        sleep(1000);
+        randomRobotStep(nonMoving);
+        sleep(1000);
+        while (!isValidStep(moving)) {
+            randomRobotStep(nonMoving);
+            sleep(1000);
+        }
+        coverage.add(getPositionOfObject(moving.getDummy1()));
+        freeChamberFromFloor(nonMoving);
+
+        sleep(1000);
     }
 
     private char whatCleaningZone(Point3D chamberPosition) {
@@ -82,13 +83,23 @@ public class RandomWalkController extends Controller {
     }
 
     private void pathToNextCleaningZone() {
-        // TODO: ACTUALLY MOVE FROM ONE ZONE TO NEXT:
-        //  Compute path from left and right chamber to critical point in next zone
         Point3D entryToNextCleaningZone = entries.get(currentCleaningZone);
         if (currentPositionLeftChamber.distance(entryToNextCleaningZone) > currentPositionRightChamber.distance(entryToNextCleaningZone)) {
-            // move right chamber first
+            while (whatCleaningZone(currentPositionLeftChamber) != currentCleaningZone || whatCleaningZone(currentPositionRightChamber) != currentCleaningZone) {
+                double angle = currentPositionRightChamber.angle(entryToNextCleaningZone, currentPositionLeftChamber);
+                robotStep(rightChamber, angle);
+
+                angle = currentPositionLeftChamber.angle(entryToNextCleaningZone, currentPositionRightChamber);
+                robotStep(leftChamber, angle);
+            }
         } else {
-            // move left chamber first
+            while (whatCleaningZone(currentPositionRightChamber) != currentCleaningZone || whatCleaningZone(currentPositionLeftChamber) != currentCleaningZone) {
+                double angle = currentPositionLeftChamber.angle(entryToNextCleaningZone, currentPositionRightChamber);
+                robotStep(leftChamber, angle);
+
+                angle = currentPositionRightChamber.angle(entryToNextCleaningZone, currentPositionLeftChamber);
+                robotStep(rightChamber, angle);
+            }
         }
     }
 
@@ -113,12 +124,23 @@ public class RandomWalkController extends Controller {
         sim.simxSetObjectPosition(clientID, chamber.getDummy1(), -1, position, sim.simx_opmode_blocking);
     }
 
-    private void robotStep(Chamber nonMovingChamber) {
+    private void randomRobotStep(Chamber nonMoving) {
         FloatW jointPos = new FloatW(0);
         float increment = (float) (Math.toRadians(new Random().nextInt(361)));
-        sim.simxGetJointPosition(clientID, nonMovingChamber.getJoint2(), jointPos, sim.simx_opmode_blocking);
-        float degreeOfMovement = jointPos.getValue() + increment;
-        sim.simxSetJointTargetPosition(clientID, nonMovingChamber.getJoint2(), degreeOfMovement, sim.simx_opmode_blocking);
+        sim.simxGetJointPosition(clientID, nonMoving.getJoint2(), jointPos, sim.simx_opmode_blocking);
+        float radiansOfMovement = jointPos.getValue() + increment;
+        sim.simxSetJointTargetPosition(clientID, nonMoving.getJoint2(), radiansOfMovement, sim.simx_opmode_blocking);
+    }
+
+    private boolean isValidStep(Chamber moved) {
+        Point3D newPosition = getPositionOfObject(moved.getDummy1());
+        char cleaningZoneOfNewPosition = whatCleaningZone(newPosition);
+        return currentCleaningZone == cleaningZoneOfNewPosition;
+    }
+
+    private void robotStep(Chamber nonMovingChamber, double angle) {
+        float radiansOfMovement = (float) Math.toRadians(angle);
+        sim.simxSetJointTargetPosition(clientID, nonMovingChamber.getJoint2(), radiansOfMovement, sim.simx_opmode_blocking);
     }
 
     private Point3D getPositionOfObject(int objectHandle) {
