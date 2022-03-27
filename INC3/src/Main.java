@@ -27,8 +27,8 @@ public class Main
             System.out.println("handles loaded");
             sleep(2000);
 
-            Controller c = new Controller(clientID, sim, handles); 
-            c.randomWalk();
+            RandomWalkController c = new RandomWalkController(clientID, sim, handles);
+            c.clean();
 
             sleep(2000);
             
