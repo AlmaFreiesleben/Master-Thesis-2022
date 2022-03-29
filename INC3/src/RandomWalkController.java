@@ -65,12 +65,15 @@ public class RandomWalkController extends Controller {
     private char whatCleaningZone(Point3D chamberPosition) {
         double x = chamberPosition.getX();
         double y = chamberPosition.getY();
+        double z = chamberPosition.getZ();
 
-        if      (x > 0 && y > 0) return 'A';
-        else if (x > 0 && y < 0) return 'B';
-        else if (x < 0 && y < 0) return 'C';
-        else if (x < 0 && y > 0) return 'D';
-        else                     return '-';
+        if (z > 0) return '-';
+
+        if       (x >= 0 && y > 0 || x == 0 && y == 0)  return 'A';
+        else if  (x > 0 && y <= 0)                      return 'B';
+        else if  (x <= 0 && y < 0)                      return 'C';
+        else if  (x < 0 && y >= 0)                      return 'D';
+        else                                            return '-';
     }
 
     private void moveToNextCleaningZone() {
@@ -147,7 +150,11 @@ public class RandomWalkController extends Controller {
         FloatWA position = new FloatWA(3);
         sim.simxGetObjectPosition(clientID, objectHandle, -1, position, sim.simx_opmode_blocking);
         float[] pos = position.getArray();
-        return new Point3D(pos[0], pos[1], pos[2]);
+        double f = 0.5;
+        double x = f * Math.round(pos[0]/f);
+        double y = f * Math.round(pos[1]/f);
+        double z = f * Math.round(pos[2]/f);
+        return new Point3D(x, y, z);
     }
 
     private void sleep(int millis) {

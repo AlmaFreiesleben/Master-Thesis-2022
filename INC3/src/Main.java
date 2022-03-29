@@ -24,7 +24,7 @@ public class Main
             }
 
             sim.simxStartSimulation(clientID,sim.simx_opmode_blocking);
-            System.out.println("handles loaded");
+
             sleep(2000);
 
             RandomWalkController c = new RandomWalkController(clientID, sim, handles);
