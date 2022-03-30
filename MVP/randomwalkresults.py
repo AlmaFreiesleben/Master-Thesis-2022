@@ -1,4 +1,5 @@
 from math import pi, sin, cos, floor
+from os import umask
 import random
 import matplotlib.pyplot as plt
 import numpy as np
@@ -82,9 +83,7 @@ def random_walk():
         right_y.append(y) 
         current_right_x = x 
         current_right_y = y
-        world_x = floor(x) + 10 % 19
-        world_y = floor(y) + 10 % 19
-        world[world_x, world_y] = True
+        update_coverage()
         is_left = 0        
     else:
         #compute x,y for left chamber
@@ -98,10 +97,14 @@ def random_walk():
         left_y.append(y)
         current_left_x = x
         current_left_y = y
-        world_x = floor(x) + 10 % 19
-        world_y = floor(y) + 10 % 19
-        world[world_x, world_y] = True
+        update_coverage()
+        
         is_left = 1
+
+def update_coverage():
+    world_x = floor(x) + 10 % 19
+    world_y = floor(y) + 10 % 19
+    world[world_x, world_y] = True
 
 def is_covered():
     return np.all(world)
