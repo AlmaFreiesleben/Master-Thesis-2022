@@ -19,7 +19,7 @@ n_dots = 12                         # chambers around fixed chamber
 current_left_x = 0
 current_left_y = 0
 current_right_x = 0
-current_right_y = 1
+current_right_y = 2
 x = 0
 y = 0
 
@@ -34,6 +34,7 @@ def plot(is_first):
     #plt.plot(current_left_x, current_left_y, "ro")
     #plt.plot(current_right_x, current_right_y, "go")
     plt.plot([W/2,-W/2,-W/2,W/2,W/2],[H/2,H/2,-H/2,-H/2,H/2], "b--")
+    #plt.plot([20,0,0,20,20],[20,20,0,0,20], "b--")
     if (not is_first): plt.savefig("simulation.png")
     plt.show()
 
@@ -53,6 +54,7 @@ def plot_path():
 
 def collision_detection():
     return x > W/2 or y > H/2 or x < -(W/2) or y < -(H/2)
+    #return x > W or y > H or x < 0 or y < 0
 
 def robot_step():
     global current_right_x, current_right_y, current_left_x, current_left_y, is_left_fixed, x, y
@@ -78,19 +80,21 @@ def random_walk():
     if (is_left_fixed):
         right_x.append(x)
         right_y.append(y)
-        update_coverage()
+        update_all_covered_points()
         current_right_x = x 
         current_right_y = y
         is_left_fixed = 0        
     else:
         left_x.append(x)
         left_y.append(y)
-        update_coverage()
+        update_all_covered_points()
         current_left_x = x
         current_left_y = y
         is_left_fixed = 1
 
 def update_coverage():
+    print("x: ", floor(x))
+    print("y: ", floor(y))
     world_x = floor(x) + 10 % 19
     world_y = floor(y) + 10 % 19
     world[world_x, world_y] = True
@@ -110,8 +114,6 @@ def update_all_covered_points():
             world_y = floor(yy) + 10 % 19
             if (world_x < 20 and world_y < 20): 
                 world[world_x, world_y] = True
-                right_x.append(xx)
-                right_y.append(yy)
     else:
         a1 = get_angle((x,y), (current_right_x, current_right_y), (current_left_x, current_left_y))
         a2 = get_angle((current_left_x, current_left_y), (current_right_x, current_right_y), (current_right_x+1, current_right_y))
@@ -123,8 +125,6 @@ def update_all_covered_points():
             world_y = floor(yy) + 10 % 19
             if (world_x < 20 and world_y < 20): 
                 world[world_x, world_y] = True
-                left_x.append(xx)
-                left_y.append(yy)
 
 def get_angle(a, b, c):
     ang = degrees(atan2(c[1]-b[1], c[0]-b[0]) - atan2(a[1]-b[1], a[0]-b[0]))
