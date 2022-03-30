@@ -1,4 +1,4 @@
-from math import pi, sin, cos, floor
+from math import pi, sin, cos, floor, degrees, atan2
 from os import umask
 import random
 import matplotlib.pyplot as plt
@@ -9,7 +9,7 @@ import numpy as np
 R = 2                               # distance between champers
 W = 20                              # width of arena
 H = 20                              # height of arena
-is_left = 1                         # start with left chamber
+is_left_fixed = 1                   # start with left chamber
 world = np.full((W,H), False)       # create decomposition of world
 world[10][10] = True                # left chamber has cleaned
 world[12][10] = True                # right chamber has cleaned
@@ -39,7 +39,7 @@ def plot(is_first):
 
 def plot_path():
     angs = np.linspace(0, 2*np.pi, n_dots)                   # angles to the dots
-    if (is_left): cx, cy = (current_left_x, current_left_y)  # center of circle
+    if (is_left_fixed): cx, cy = (current_left_x, current_left_y)  # center of circle
     else: cx, cy = (current_right_x, current_right_y)
     xs, ys = [], []                                          # for coordinates of points to plot
 
@@ -55,13 +55,12 @@ def collision_detection():
     return x > W/2 or y > H/2 or x < -(W/2) or y < -(H/2)
 
 def robot_step():
-    global current_right_x, current_right_y, current_left_x, current_left_y, is_left, x, y
-    #randomly move a chamber one of 12 legal actions
+    global current_right_x, current_right_y, current_left_x, current_left_y, is_left_fixed, x, y
     a = random.choice([pi/6, pi/3, pi/2, (2*pi)/3, (5*pi)/6, pi, (7*pi)/6, (4*pi)/3, (3*pi)/2, (5*pi)/3, (11*pi)/6, 2*pi])
     #dir = random.choice([0,1])
     #if (dir): a = -a
 
-    if (is_left):   
+    if (is_left_fixed):   
         x = current_left_x + R * cos(a)
         y = current_left_y + R * sin(a)
     else:
@@ -69,37 +68,27 @@ def robot_step():
         y = current_right_y + R * sin(a)
 
 def random_walk():
-    global current_right_x, current_right_y, current_left_x, current_left_y, is_left, x, y
+    global current_right_x, current_right_y, current_left_x, current_left_y, is_left_fixed, x, y
     
-    if (is_left):
-        #compute x,y for right chamber
+    robot_step()
+
+    while (collision_detection()):
         robot_step()
 
-        #check collision, if collision choose other action
-        while (collision_detection()):
-            robot_step()
-
+    if (is_left_fixed):
         right_x.append(x)
-        right_y.append(y) 
+        right_y.append(y)
+        update_coverage()
         current_right_x = x 
         current_right_y = y
-        update_coverage()
-        is_left = 0        
+        is_left_fixed = 0        
     else:
-        #compute x,y for left chamber
-        robot_step()
-    
-        #check collision, if collision choose other action
-        while (collision_detection()):
-            robot_step()
-    
         left_x.append(x)
         left_y.append(y)
+        update_coverage()
         current_left_x = x
         current_left_y = y
-        update_coverage()
-        
-        is_left = 1
+        is_left_fixed = 1
 
 def update_coverage():
     world_x = floor(x) + 10 % 19
@@ -109,6 +98,39 @@ def update_coverage():
 def is_covered():
     return np.all(world)
 
+def update_all_covered_points():
+    if (is_left_fixed):
+        a1 = get_angle((x,y), (current_left_x, current_left_y), (current_right_x, current_right_y))
+        a2 = get_angle((current_right_x, current_right_y), (current_left_x, current_left_y), (current_left_x+1, current_left_y))
+        angs = np.linspace(a2, a1, 10)
+        for a in angs:
+            xx = current_left_x + R * cos(a)
+            yy = current_left_y + R * sin(a)
+            world_x = floor(xx) + 10 % 19
+            world_y = floor(yy) + 10 % 19
+            if (world_x < 20 and world_y < 20): 
+                world[world_x, world_y] = True
+                right_x.append(xx)
+                right_y.append(yy)
+    else:
+        a1 = get_angle((x,y), (current_right_x, current_right_y), (current_left_x, current_left_y))
+        a2 = get_angle((current_left_x, current_left_y), (current_right_x, current_right_y), (current_right_x+1, current_right_y))
+        angs = np.linspace(a2, a1, 20)
+        for a in angs:
+            xx = current_right_x + R * cos(a)
+            yy = current_right_y + R * sin(a)
+            world_x = floor(xx) + 10 % 19
+            world_y = floor(yy) + 10 % 19
+            if (world_x < 20 and world_y < 20): 
+                world[world_x, world_y] = True
+                left_x.append(xx)
+                left_y.append(yy)
+
+def get_angle(a, b, c):
+    ang = degrees(atan2(c[1]-b[1], c[0]-b[0]) - atan2(a[1]-b[1], a[0]-b[0]))
+    a = ang + 360 if ang < 0 else ang
+    return a * pi / 180
+
 def print_world():
     print("world:\n", world.astype(int)) 
 
@@ -116,6 +138,7 @@ def simulation():
     plot(True)
 
     while (not is_covered()):
+    #for _ in range(10):
         random_walk()
         #plot(False)
     
