@@ -107,7 +107,7 @@ def is_covered():
     return np.all(world)
 
 def print_world():
-    print("world:\n", world) 
+    print("world:\n", world.astype(int)) 
 
 def simulation():
     plot(True)
@@ -117,6 +117,6 @@ def simulation():
         #plot(False)
     
     plot(False)
-    #print_world()   
+    print_world()   
 
 simulation()
