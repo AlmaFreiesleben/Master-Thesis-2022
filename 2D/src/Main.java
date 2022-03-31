@@ -27,11 +27,7 @@ public class Main
                 
             sleep(2000);
 
-            // Run the random walk algorithm
-            //Controller c = new Controller(clientID, true, sim, handles); 
-            //c.randomWalk(10);
-
-            Controller2 c = new Controller2(clientID, sim, handles); 
+            Controller c = new Controller(clientID, sim, handles);
             c.randomWalk();
 
             sleep(2000);

@@ -3,7 +3,7 @@ import coppelia.FloatWA;
 import coppelia.FloatW;
 import java.util.Random;
 
-public class Controller2 {
+public class Controller {
 
     private int clientID; 
     private remoteApi sim;
@@ -13,7 +13,7 @@ public class Controller2 {
     private double H = 4; // 100 cm is removed from floor size (5x5) to account for the chamber size.
     private double W = 4; // 100 cm is removed from floor size (5x5) to account for the chamber size.
     
-    public Controller2(int clienID, remoteApi sim, int[] handles) {
+    public Controller(int clienID, remoteApi sim, int[] handles) {
         this.clientID = clienID;
         this.sim = sim;
         this.floor = handles[0];
@@ -25,7 +25,7 @@ public class Controller2 {
         while (true) {
             fixChamberToFloor(leftChamber);
             sleep(1000);
-            robotStep(leftChamber, rightChamber);
+            robotStep(rightChamber, leftChamber);
             sleep(1000);
             freeChamberFromFloor(leftChamber);
 
@@ -33,7 +33,7 @@ public class Controller2 {
 
             fixChamberToFloor(rightChamber);
             sleep(1000);
-            robotStep(rightChamber, leftChamber);
+            robotStep(leftChamber, rightChamber);
             sleep(1000);
             freeChamberFromFloor(rightChamber);
 
@@ -57,13 +57,13 @@ public class Controller2 {
     private void robotStep(Chamber movingChamber, Chamber nonMovingChamber) {
         FloatW jointPos = new FloatW(0);
         float increment = (float) (Math.toRadians(new Random().nextInt(361)));
+        sim.simxGetJointPosition(clientID, nonMovingChamber.getJoint(), jointPos, sim.simx_opmode_blocking);
         float degreeOfMovement = jointPos.getValue() + increment;
 
         boolean hasCollided = checkCollision(nonMovingChamber, degreeOfMovement);
 
         if (!hasCollided) {
-            sim.simxGetJointPosition(clientID, movingChamber.getJoint(), jointPos, sim.simx_opmode_blocking);
-            sim.simxSetJointTargetPosition(clientID, movingChamber.getJoint(), degreeOfMovement, sim.simx_opmode_blocking);
+            sim.simxSetJointTargetPosition(clientID, nonMovingChamber.getJoint(), degreeOfMovement, sim.simx_opmode_blocking);
         }
     }
 
