@@ -62,28 +62,27 @@ public class Controller {
 
     private void robotStep(Chamber movingChamber, Chamber nonMovingChamber) {
         FloatW jointPos = new FloatW(0);
-        //int deg = new Random().nextInt(361);
-        int deg = new Random().nextInt(180);
+        int deg = new Random().nextInt(361);
         float increment = (float) (Math.toRadians(deg));
         sim.simxGetJointPosition(clientID, nonMovingChamber.getJoint(), jointPos, sim.simx_opmode_blocking);
-        float degreeOfMovement = increment + jointPos.getValue();
+        float movement = increment + jointPos.getValue();
 
-        boolean hasCollided = checkCollision(nonMovingChamber, movingChamber, degreeOfMovement);
+        boolean hasCollided = checkCollision(nonMovingChamber, movement);
 
         if (!hasCollided) {
-            sim.simxSetJointTargetPosition(clientID, nonMovingChamber.getJoint(), degreeOfMovement, sim.simx_opmode_blocking);
+            sim.simxSetJointTargetPosition(clientID, nonMovingChamber.getJoint(), movement, sim.simx_opmode_blocking);
             sleep(500);
             updateCoverage(movingChamber);
         }
     }
 
-    private boolean checkCollision(Chamber nonMovingChamber, Chamber moving, float degreeOfMovement) {
+    private boolean checkCollision(Chamber nonMovingChamber, float movement) {
         var pos = getPositionOfHandle(nonMovingChamber.getDummy1());
         double fixedX = pos.getArray()[0];
         double fixedY = pos.getArray()[1];
 
-        double x = fixedX + radius * Math.cos(degreeOfMovement);
-        double y = fixedY + radius * Math.sin(degreeOfMovement);
+        double x = fixedX + radius * Math.cos(movement);
+        double y = fixedY + radius * Math.sin(movement);
 
         return x > W/2 || y > H/2 || x < -(W/2) || y < -(H/2); 
     }
