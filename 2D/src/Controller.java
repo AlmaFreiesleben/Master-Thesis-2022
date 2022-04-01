@@ -60,24 +60,24 @@ public class Controller {
         sim.simxSetObjectPosition(clientID, chamber.getDummy1(), -1, position, sim.simx_opmode_blocking);
     }
 
-    private void robotStep(Chamber movingChamber, Chamber nonMovingChamber) {
+    private void robotStep(Chamber movingChamber, Chamber fixedChamber) {
         FloatW jointPos = new FloatW(0);
         int deg = new Random().nextInt(361);
         float increment = (float) (Math.toRadians(deg));
-        sim.simxGetJointPosition(clientID, nonMovingChamber.getJoint(), jointPos, sim.simx_opmode_blocking);
+        sim.simxGetJointPosition(clientID, fixedChamber.getJoint(), jointPos, sim.simx_opmode_blocking);
         float movement = increment + jointPos.getValue();
 
-        boolean hasCollided = checkCollision(nonMovingChamber, movement);
+        boolean hasCollided = checkCollision(fixedChamber, movement);
 
         if (!hasCollided) {
-            sim.simxSetJointTargetPosition(clientID, nonMovingChamber.getJoint(), movement, sim.simx_opmode_blocking);
+            sim.simxSetJointTargetPosition(clientID, fixedChamber.getJoint(), movement, sim.simx_opmode_blocking);
             sleep(500);
             updateCoverage(movingChamber);
         }
     }
 
-    private boolean checkCollision(Chamber nonMovingChamber, float movement) {
-        var pos = getPositionOfHandle(nonMovingChamber.getDummy1());
+    private boolean checkCollision(Chamber fixedChamber, float movement) {
+        var pos = getPositionOfHandle(fixedChamber.getDummy1());
         double fixedX = pos.getArray()[0];
         double fixedY = pos.getArray()[1];
 
