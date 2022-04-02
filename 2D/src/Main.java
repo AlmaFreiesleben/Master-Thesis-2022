@@ -27,8 +27,8 @@ public class Main
                 
             sleep(2000);
 
-            TestController c = new TestController(clientID, sim, handles);
-            c.randomWalk();
+            Controller c = new Controller(clientID, sim, handles);
+            c.test();
 
             sleep(2000);
             

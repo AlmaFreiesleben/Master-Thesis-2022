@@ -2,7 +2,6 @@ import coppelia.remoteApi;
 import coppelia.FloatWA;
 import coppelia.FloatW;
 import java.util.*;
-import static java.lang.Math.*;
 
 public class Controller {
 
@@ -14,10 +13,13 @@ public class Controller {
     private Chamber rightChamber;
     private double H = 3;
     private double W = 3;
-    boolean[][] coverage;
+    private boolean isLeftFixed;
+
+    // TEST VARIABLES REMOVE!!! TODO
     double test_x = 0;
     double test_y = 0;
     int cnt = 0;
+    boolean isFirst = true;
     
     public Controller(int clientID, remoteApi sim, int[] handles) {
         this.clientID = clientID;
@@ -25,28 +27,79 @@ public class Controller {
         this.floor = handles[0];
         this.leftChamber = new Chamber(handles[4], handles[1], handles[2]);
         this.rightChamber = new Chamber(handles[6], handles[8], handles[9]);
-        coverage = new boolean[10][10];
-        updateCoverage(leftChamber);
-        updateCoverage(rightChamber);
+        isLeftFixed = true;
     }
 
     public void randomWalk() {
+        int A = 0;
 
-        while (!isCovered()) {
-            fixChamberToFloor(leftChamber);
-            sleep(500);
-            robotStep(rightChamber, leftChamber);
-            sleep(500);
-            freeChamberFromFloor(leftChamber);
-            sleep(500);
+        while (true) { //TODO: while !isCovered()
+            boolean dir = new Random().nextBoolean();
+            int degreeIncrement = (dir) ? new Random().nextInt(181) : new Random().nextInt(-181);
 
-            fixChamberToFloor(rightChamber);
-            sleep(500);
-            robotStep(leftChamber, rightChamber);
-            sleep(500);
-            freeChamberFromFloor(rightChamber);
-            sleep(500);
+            if (isLeftFixed) {
+                step(rightChamber, leftChamber, degreeIncrement, A);
+            } else {
+                step(leftChamber, rightChamber, degreeIncrement, A);
+            }
+
+            A = degreeIncrement;
         }
+    }
+
+    public void test() {
+        step(rightChamber, leftChamber, -20, 0);
+        isFirst = false;
+        step(leftChamber, rightChamber, 40, -20);
+    }
+
+    private void step(Chamber moving, Chamber fixed, int degree, int lastMove) {
+        fixChamberToFloor(fixed);
+        sleep(500);
+        moveChamber(fixed, moving, degree, lastMove);
+        sleep(500);
+        freeChamberFromFloor(fixed);
+        sleep(500);
+    }
+
+    private void moveChamber(Chamber fixed, Chamber moving, int degree, int A) {
+        FloatW jointPos = new FloatW(0);
+        sim.simxGetJointPosition(clientID, fixed.getJoint(), jointPos, sim.simx_opmode_blocking);
+        float B = (float) (Math.toRadians(degree)) + jointPos.getValue();
+
+        B = (B > 360) ? B - 360 : B;
+
+        boolean hasCollided = checkCollision(fixed, B, A);
+
+        if (!hasCollided) {
+            sim.simxSetJointTargetPosition(clientID, fixed.getJoint(), B, sim.simx_opmode_blocking);
+            sleep(500);
+            FloatWA pos = getPositionOfHandle(moving.getJoint());
+            sleep(500);
+            if (Math.abs(test_x - pos.getArray()[0]) > 0.001 || Math.abs(test_y - pos.getArray()[1]) > 0.001) {
+                System.out.println(cnt);
+                System.out.println("predicted x: " + test_x + " predicted y: " + test_y);
+                System.out.println("actual x: " + pos.getArray()[0] + " actual y: " + pos.getArray()[1]);
+            }
+            cnt++;
+            isLeftFixed = !isLeftFixed;
+        }
+    }
+
+    private boolean checkCollision(Chamber fixed, float B, float A) {
+        var pos = getPositionOfHandle(fixed.getJoint());
+        float fixedX = pos.getArray()[0];
+        float fixedY = pos.getArray()[1];
+
+        float C = (isFirst) ? B : 180 - (B - Math.abs(A));
+
+        double x = fixedX + radius * Math.cos(C);
+        double y = fixedY + radius * Math.sin(C);
+
+        test_x = x;
+        test_y = y;
+
+        return Math.abs(x) > W/2 || Math.abs(y) > H/2;
     }
 
     private void fixChamberToFloor(Chamber chamber) {
@@ -62,73 +115,10 @@ public class Controller {
         sim.simxSetObjectPosition(clientID, chamber.getDummy1(), -1, position, sim.simx_opmode_blocking);
     }
 
-    private void robotStep(Chamber movingChamber, Chamber fixedChamber) {
-        int deg = new Random().nextInt(361);
-        float increment = (float) (Math.toRadians(deg));
-
-        FloatW jointPos = new FloatW(0);
-        sim.simxGetJointPosition(clientID, fixedChamber.getJoint(), jointPos, sim.simx_opmode_blocking);
-        float movement = increment + jointPos.getValue();
-
-        movement = (movement > 360) ? movement - 360 : movement;
-
-        boolean hasCollided = checkCollision(fixedChamber, movement);
-
-        if (!hasCollided) {
-            sim.simxSetJointTargetPosition(clientID, fixedChamber.getJoint(), movement, sim.simx_opmode_blocking);
-            sleep(500);
-            FloatWA pos = getPositionOfHandle(movingChamber.getDummy1());
-            if (Math.abs(test_x - pos.getArray()[0]) > 0.001 || Math.abs(test_y - pos.getArray()[1]) > 0.001) {
-                System.out.println(cnt);
-                System.out.println("predic x: " + test_x + " predic y: " + test_y);
-                System.out.println("actual x: " + pos.getArray()[0] + " predic y: " + pos.getArray()[1]);
-            }
-            updateCoverage(movingChamber);
-            cnt++;
-        }
-    }
-
-    private boolean checkCollision(Chamber fixedChamber, float movement) {
-        var pos = getPositionOfHandle(fixedChamber.getDummy1());
-        float fixedX = pos.getArray()[0];
-        float fixedY = pos.getArray()[1];
-
-        double x = fixedX + radius * Math.cos(movement);
-        double y = fixedY + radius * Math.sin(movement);
-        test_x = x;
-        test_y = y;
-
-        return Math.abs(x) > W/2 || Math.abs(y) > H/2;
-    }
-
     private FloatWA getPositionOfHandle(int handle) {
         FloatWA position = new FloatWA(3);
         sim.simxGetObjectPosition(clientID, handle, -1, position, sim.simx_opmode_blocking);
         return position;
-    }
-
-    private boolean isCovered() {
-        HashSet<Boolean> s = new HashSet<>();
-
-        for (boolean[] c : coverage) {
-            for (boolean b : c) {
-                s.add(b);
-            }
-        }
-
-        return (s.size() == 1);
-    }
-
-    private void printCoverage() {
-        for (boolean[] row : coverage) System.out.println(Arrays.toString(row));
-    }
-
-    private void updateCoverage(Chamber chamber) {
-        FloatWA position = new FloatWA(3);
-        sim.simxGetObjectPosition(clientID, chamber.getDummy1(), -1, position, sim.simx_opmode_blocking);
-        int currX = (round(position.getArray()[0]) + 4) % 9;
-        int currY = (round(position.getArray()[1]) + 4) % 9;
-        coverage[currX][currY] = true;
     }
 
     private void sleep(int millis) {
