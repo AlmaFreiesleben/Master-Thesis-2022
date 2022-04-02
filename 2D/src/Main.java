@@ -27,7 +27,7 @@ public class Main
                 
             sleep(2000);
 
-            Controller c = new Controller(clientID, sim, handles);
+            TestController c = new TestController(clientID, sim, handles);
             c.randomWalk();
 
             sleep(2000);
@@ -38,7 +38,7 @@ public class Main
             IntW pingTime = new IntW(0);
             sim.simxGetPingTime(clientID,pingTime);
 
-            // Now close the connection to CoppeliaSim:   
+            // Now close the connection to CoppeliaSim.
             sim.simxFinish(clientID);
         } else { 
             System.out.println("Failed connecting to remote API server"); 
