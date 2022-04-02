@@ -19,60 +19,52 @@ public class Controller {
     double test_x = 0;
     double test_y = 0;
     int cnt = 0;
-    boolean isFirst = true;
-    
+    float prevA = 0;
+
     public Controller(int clientID, remoteApi sim, int[] handles) {
         this.clientID = clientID;
         this.sim = sim;
         this.floor = handles[0];
-        this.leftChamber = new Chamber(handles[4], handles[1], handles[2]);
-        this.rightChamber = new Chamber(handles[6], handles[8], handles[9]);
+        this.leftChamber = new Chamber(handles[4], handles[1], handles[2], -1);
+        this.rightChamber = new Chamber(handles[6], handles[8], handles[9], 1);
         isLeftFixed = true;
     }
 
     public void randomWalk() {
-        int A = 0;
+        int prevA = 0;
 
         while (true) { //TODO: while !isCovered()
-            boolean dir = new Random().nextBoolean();
-            int degreeIncrement = (dir) ? new Random().nextInt(181) : new Random().nextInt(-181);
+            int A = new Random().nextInt(361);
 
             if (isLeftFixed) {
-                step(rightChamber, leftChamber, degreeIncrement, A);
+                step(rightChamber, leftChamber, A);
             } else {
-                step(leftChamber, rightChamber, degreeIncrement, A);
+                step(leftChamber, rightChamber, A);
             }
 
-            A = degreeIncrement;
+            prevA = A;
         }
     }
 
     public void test() {
-        step(rightChamber, leftChamber, -20, 0);
-        isFirst = false;
-        step(leftChamber, rightChamber, 40, -20);
+        step(rightChamber, leftChamber, 20);
+        step(leftChamber, rightChamber, -40);
     }
 
-    private void step(Chamber moving, Chamber fixed, int degree, int lastMove) {
+    private void step(Chamber moving, Chamber fixed, int M) {
         fixChamberToFloor(fixed);
         sleep(500);
-        moveChamber(fixed, moving, degree, lastMove);
+        moveChamber(fixed, moving, M, prevA);
         sleep(500);
         freeChamberFromFloor(fixed);
         sleep(500);
     }
 
-    private void moveChamber(Chamber fixed, Chamber moving, int degree, int A) {
-        FloatW jointPos = new FloatW(0);
-        sim.simxGetJointPosition(clientID, fixed.getJoint(), jointPos, sim.simx_opmode_blocking);
-        float B = (float) (Math.toRadians(degree)) + jointPos.getValue();
-
-        B = (B > 360) ? B - 360 : B;
-
-        boolean hasCollided = checkCollision(fixed, B, A);
+    private void moveChamber(Chamber fixed, Chamber moving, float M, float A) {
+        boolean hasCollided = checkCollision(fixed, M, A);
 
         if (!hasCollided) {
-            sim.simxSetJointTargetPosition(clientID, fixed.getJoint(), B, sim.simx_opmode_blocking);
+            var t = sim.simxSetJointTargetPosition(clientID, fixed.getJoint(), (float) Math.toRadians(fixed.getMotorDir() * M), sim.simx_opmode_blocking);
             sleep(500);
             FloatWA pos = getPositionOfHandle(moving.getJoint());
             sleep(500);
@@ -86,20 +78,27 @@ public class Controller {
         }
     }
 
-    private boolean checkCollision(Chamber fixed, float B, float A) {
+    private boolean checkCollision(Chamber fixed, float M, float A) {
         var pos = getPositionOfHandle(fixed.getJoint());
         float fixedX = pos.getArray()[0];
         float fixedY = pos.getArray()[1];
 
-        float C = (isFirst) ? B : 180 - (B - Math.abs(A));
+        float predictedA = predictA(M, A);
 
-        double x = fixedX + radius * Math.cos(C);
-        double y = fixedY + radius * Math.sin(C);
+        double x = fixedX + radius * Math.cos(Math.toRadians(predictedA));
+        double y = fixedY + radius * Math.sin(Math.toRadians(predictedA));
 
         test_x = x;
         test_y = y;
 
         return Math.abs(x) > W/2 || Math.abs(y) > H/2;
+    }
+
+    private float predictA(float M, float A) {
+        float predictedA = -A + M;
+        if (predictedA > 360) return A - 360;
+        if (predictedA < 0) return A + 360;
+        return predictedA;
     }
 
     private void fixChamberToFloor(Chamber chamber) {
