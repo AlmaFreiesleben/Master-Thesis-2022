@@ -8,9 +8,9 @@ public class Controller {
     private int clientID;
     private remoteApi sim;
     private int floor;
-    private Chamber leftChamber;
-    private Chamber rightChamber;
-    private boolean isLeftFixed;
+    private Chamber redChamber;
+    private Chamber greenChamber;
+    private boolean isRedFixed;
     private double radius = 0.8;
     private double H = 3;
     private double W = 3;
@@ -25,27 +25,27 @@ public class Controller {
         this.clientID = clientID;
         this.sim = sim;
         this.floor = handles[0];
-        this.leftChamber = new Chamber(handles[4], handles[1], handles[2]);
-        this.rightChamber = new Chamber(handles[6], handles[8], handles[9]);
-        isLeftFixed = true;
+        this.redChamber = new Chamber(handles[4], handles[1], handles[2]);
+        this.greenChamber = new Chamber(handles[6], handles[8], handles[9]);
+        isRedFixed = true;
     }
 
     public void randomWalk() {
         while (true) { //TODO: while !isCovered()
-            int M = new Random().nextInt(361) - 180;
+            int motor = new Random().nextInt(361) - 180;
 
-            if (isLeftFixed) {
-                step(rightChamber, leftChamber, M);
+            if (isRedFixed) {
+                step(greenChamber, redChamber, motor);
             } else {
-                step(leftChamber, rightChamber, M);
+                step(redChamber, greenChamber, motor);
             }
         }
     }
 
     public void test() {
-        step(rightChamber, leftChamber, -20);
-        step(leftChamber, rightChamber, 40);
-        step(rightChamber, leftChamber, 40);
+        step(greenChamber, redChamber, -20);
+        step(redChamber, greenChamber, 40);
+        step(greenChamber, redChamber, 40);
     }
 
     private void step(Chamber moving, Chamber fixed, float motor) {
@@ -66,7 +66,7 @@ public class Controller {
             sleep(500);
             FloatWA pos = getPositionOfHandle(moving.getJoint());
             sleep(500);
-            isLeftFixed = !isLeftFixed;
+            isRedFixed = !isRedFixed;
             prevMotor = motor;
 
             if (Math.abs(test_x - pos.getArray()[0]) > 0.01 || Math.abs(test_y - pos.getArray()[1]) > 0.01) {

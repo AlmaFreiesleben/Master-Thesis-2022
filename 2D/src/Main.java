@@ -15,7 +15,7 @@ public class Main
 
             // Now try to retrieve data in a blocking fashion (i.e. a service call):
             IntW objectHandles = new IntW(1);
-            String[] joints = new String[]{"Floor", "Left_Dummy_1", "Left_Dummy_2", "Left_chamber", "Left_joint", "Cylinder", "Right_joint", "Right_chamber", "Right_Dummy_1", "Right_Dummy_2"};
+            String[] joints = new String[]{"Floor", "Red_Dummy_1", "Red_Dummy_2", "Red_chamber", "Red_joint", "Cylinder", "Green_joint", "Green_chamber", "Green_Dummy_1", "Green_Dummy_2"};
             int[] handles = new int[10];
 
             for (int i = 0; i < joints.length; i++) {
