@@ -30,7 +30,7 @@ public class Controller {
         isLeftFixed = true;
     }
 
-    /*public void randomWalk() {
+    public void randomWalk() {
         while (true) { //TODO: while !isCovered()
             int M = new Random().nextInt(361) - 180;
 
@@ -40,37 +40,12 @@ public class Controller {
                 step(leftChamber, rightChamber, M);
             }
         }
-    }*/
+    }
 
     public void test() {
-        step(rightChamber, leftChamber, -20);
-        step(leftChamber, rightChamber, 40);
-        step(rightChamber, leftChamber, -60);
-    }
-
-    public void test2() {
-        fixChamberToFloor(leftChamber);
-        sleep(500);
-        for (int m = 0 ; m >= -180; m-=20) {
-            sim.simxSetJointTargetPosition(clientID, leftChamber.getJoint(), (float) Math.toRadians(m), sim.simx_opmode_blocking);
-            sleep(500);
-        }
-    }
-
-    public void test3() {
-        fixChamberToFloor(leftChamber);
-        sleep(500);
-        float M = (float) Math.toRadians(-20);
-        sim.simxSetJointTargetPosition(clientID, leftChamber.getJoint(), M, sim.simx_opmode_blocking);
-        sleep(500);
-        freeChamberFromFloor(leftChamber);
-        sleep(500);
-
-        fixChamberToFloor(rightChamber);
-        sleep(500);
-        float newM = (float) Math.toRadians(40);
-        sim.simxSetJointTargetPosition(clientID, rightChamber.getJoint(), newM, sim.simx_opmode_blocking);
-        sleep(500);
+        step(rightChamber, leftChamber, 20);
+        step(leftChamber, rightChamber, -40);
+        step(rightChamber, leftChamber, 60);
     }
 
     private void step(Chamber moving, Chamber fixed, int M) {
@@ -118,11 +93,11 @@ public class Controller {
     }
 
     private float predictA(Chamber fixed, float M) {
-        if (fixed.equals(leftChamber) && M < 0) return (prevA < 0) ? (M * -1) + prevA : (M * -1) - prevA;
-        //if (fixed.equals(leftChamber) && M >= 0)  TODO
-        //if (fixed.equals(rightChamber) && M < 0)  TODO
+        if (fixed.equals(leftChamber) && M < 0)   return (prevA < 0) ? (M * -1) + prevA : (M * -1) - prevA;
+        if (fixed.equals(leftChamber) && M >= 0)  return (prevA > 0) ? (M * -1) + prevA : (M * -1) - prevA;
+        if (fixed.equals(rightChamber) && M < 0)  return (prevA > 0) ? 180 - (M + prevA) : 180 - (M - prevA);
         if (fixed.equals(rightChamber) && M >= 0) return (prevA < 0) ? 180 - (M + prevA) : 180 - (M - prevA);
-        return 0;
+        return -1000;
     }
 
     private void fixChamberToFloor(Chamber chamber) {
