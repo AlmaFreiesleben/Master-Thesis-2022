@@ -1,6 +1,6 @@
 import coppelia.remoteApi;
 import coppelia.FloatWA;
-import coppelia.FloatW;
+
 import java.util.*;
 
 public class Controller {
@@ -14,7 +14,7 @@ public class Controller {
     private double radius = 0.8;
     private double H = 3;
     private double W = 3;
-    private float prevA = 0;
+    private float prevMotor = 0;
 
     // TEST VARIABLES REMOVE!!! TODO
     double test_x = 0;
@@ -43,31 +43,31 @@ public class Controller {
     }
 
     public void test() {
-        step(rightChamber, leftChamber, 20);
-        step(leftChamber, rightChamber, -40);
-        step(rightChamber, leftChamber, 60);
+        step(rightChamber, leftChamber, -20);
+        step(leftChamber, rightChamber, 40);
+        step(rightChamber, leftChamber, 40);
     }
 
-    private void step(Chamber moving, Chamber fixed, int M) {
+    private void step(Chamber moving, Chamber fixed, float motor) {
         fixChamberToFloor(fixed);
         sleep(500);
-        moveChamber(moving, fixed, M);
+        moveChamber(moving, fixed, -motor);
         sleep(500);
         freeChamberFromFloor(fixed);
         sleep(500);
     }
 
-    private void moveChamber(Chamber moving, Chamber fixed, float M) {
-        float predictedA = predictA(fixed, M);
-        boolean hasCollided = checkCollision(fixed, predictedA);
+    private void moveChamber(Chamber moving, Chamber fixed, float motor) {
+        float predictedNextMove = predictNextMovingChamberPos(moving, fixed, motor);
+        boolean hasCollided = checkCollision(fixed, predictedNextMove);
 
         if (!hasCollided) {
-            sim.simxSetJointTargetPosition(clientID, fixed.getJoint(), (float) Math.toRadians(M), sim.simx_opmode_blocking);
+            sim.simxSetJointTargetPosition(clientID, fixed.getJoint(), (float) Math.toRadians(-motor), sim.simx_opmode_blocking);
             sleep(500);
             FloatWA pos = getPositionOfHandle(moving.getJoint());
             sleep(500);
             isLeftFixed = !isLeftFixed;
-            prevA = M;
+            prevMotor = motor;
 
             if (Math.abs(test_x - pos.getArray()[0]) > 0.01 || Math.abs(test_y - pos.getArray()[1]) > 0.01) {
                 System.out.println(cnt);
@@ -92,12 +92,33 @@ public class Controller {
         return Math.abs(x) > W/2 || Math.abs(y) > H/2;
     }
 
-    private float predictA(Chamber fixed, float M) {
-        if (fixed.equals(leftChamber) && M < 0)   return (prevA < 0) ? (M * -1) + prevA : (M * -1) - prevA;
-        if (fixed.equals(leftChamber) && M >= 0)  return (prevA > 0) ? (M * -1) + prevA : (M * -1) - prevA;
-        if (fixed.equals(rightChamber) && M < 0)  return (prevA > 0) ? 180 - (M + prevA) : 180 - (M - prevA);
-        if (fixed.equals(rightChamber) && M >= 0) return (prevA < 0) ? 180 - (M + prevA) : 180 - (M - prevA);
-        return -1000;
+    private float predictNextMovingChamberPos(Chamber moving, Chamber fixed, float motor) {
+        float fixedX = getXofChamber(fixed);
+        float movingX = getXofChamber(moving);
+
+        float predictedNextAngle = 0;
+        float absoluteAngle = transformBackToAbsoluteCoordinateSystem(motor);
+
+        if (fixedX >= movingX) predictedNextAngle = (motor > 0) ? 180 + absoluteAngle : 180 - Math.abs(absoluteAngle);
+        if (fixedX < movingX) predictedNextAngle = (motor > 0) ? absoluteAngle : 360 - Math.abs(absoluteAngle);
+
+        return normalizeAngle(predictedNextAngle);
+    }
+
+    private float transformBackToAbsoluteCoordinateSystem(float motor) {
+        return normalizeMotor(motor + prevMotor);
+    }
+
+    private float normalizeMotor(float angle) {
+        if (angle > 180) return angle - 180;
+        if (angle < -180) return angle + 180;
+        return angle;
+    }
+
+    private float normalizeAngle(float angle) {
+        if (angle > 360) return angle - 360;
+        if (angle < -360) return angle + 360;
+        return angle;
     }
 
     private void fixChamberToFloor(Chamber chamber) {
@@ -117,6 +138,11 @@ public class Controller {
         FloatWA position = new FloatWA(3);
         sim.simxGetObjectPosition(clientID, handle, -1, position, sim.simx_opmode_blocking);
         return position;
+    }
+
+    private float getXofChamber(Chamber c) {
+        FloatWA pos = getPositionOfHandle(c.getJoint());
+        return pos.getArray()[0];
     }
 
     private void sleep(int millis) {
