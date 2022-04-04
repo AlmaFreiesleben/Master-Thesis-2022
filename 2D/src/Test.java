@@ -37,7 +37,7 @@ public class Test {
         }
     }
 
-    public void test_movement_of_lappa_20_minus40_20() {
+    public void test_movement_of_lappa_20_minus40_minus40() {
         lappa.step(20);
         lappa.step(-40);
         lappa.step(-40);
@@ -57,6 +57,13 @@ public class Test {
         lappa.step(90);
         lappa.step(90);
         lappa.step(90);
+        lappa.step(90);
+    }
+
+    public void test_movement_of_lappa_4_moves() {
+        lappa.step(10);
+        lappa.step(30);
+        lappa.step(-70);
         lappa.step(90);
     }
 }

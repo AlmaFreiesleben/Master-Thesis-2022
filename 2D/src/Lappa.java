@@ -6,18 +6,19 @@ public class Lappa {
     private final Chamber redChamber;
     private final Chamber greenChamber;
     private boolean isRedFixed;
-    private float prevMotor;
+    private float accMotorMovement;
 
     // TEST VARIABLES REMOVE!!! TODO
     double test_x = 0;
     double test_y = 0;
-    int cnt = 0;
+    int cnt = 1;
 
     public Lappa(Simulator sim) {
         this.sim = sim;
         this.redChamber = sim.getRedChamber();
         this.greenChamber = sim.getGreenChamber();
         isRedFixed = true;
+        accMotorMovement = 0;
     }
 
     public void step(float angle) {
@@ -57,7 +58,7 @@ public class Lappa {
         if (!hasCollided) {
             fixed.relativeRotateChamber(angle);
             isRedFixed = !isRedFixed;
-            prevMotor = angle;
+            accMotorMovement += angle;
 
             FloatWA pos = sim.getPositionOfHandle(moving.getJoint());
             if (Math.abs(test_x - pos.getArray()[0]) > 0.1 || Math.abs(test_y - pos.getArray()[1]) > 0.1) {
@@ -69,10 +70,23 @@ public class Lappa {
         }
     }
 
+    private float predictNextChamberPos(Chamber moving, Chamber fixed, float angle) {
+        float fixedX = fixed.getXOfChamber();
+        float movingX = moving.getXOfChamber();
+
+        float predictedNextAngle = 0;
+        float transformedAngle = transformBackToAbsoluteCoordinateSystem(angle);
+
+        if (fixedX >= movingX) predictedNextAngle = (angle > 0) ? 180 + transformedAngle : 180 - Math.abs(transformedAngle);
+        if (fixedX < movingX) predictedNextAngle = (angle > 0) ? transformedAngle : 360 - Math.abs(transformedAngle);
+
+        return transformedAngle;
+    }
+
     private boolean isFallingOfArena(Chamber fixed, float predictedA) {
         double radius = 0.8;
-        int H = 4;
-        int W = 4;
+        double H = 3.5;
+        double W = 3.5;
 
         var pos = sim.getPositionOfHandle(fixed.getJoint());
         float fixedX = pos.getArray()[0];
@@ -87,20 +101,7 @@ public class Lappa {
         return Math.abs(x) > W/2 || Math.abs(y) > H/2;
     }
 
-    private float predictNextChamberPos(Chamber moving, Chamber fixed, float angle) {
-        float fixedX = fixed.getXOfChamber();
-        float movingX = moving.getXOfChamber();
-
-        float predictedNextAngle = 0;
-        float absoluteAngle = transformBackToAbsoluteCoordinateSystem(angle);
-
-        if (fixedX >= movingX) predictedNextAngle = (angle > 0) ? 180 + absoluteAngle : 180 - Math.abs(absoluteAngle);
-        if (fixedX < movingX) predictedNextAngle = (angle > 0) ? absoluteAngle : 360 - Math.abs(absoluteAngle);
-
-        return predictedNextAngle;
-    }
-
     private float transformBackToAbsoluteCoordinateSystem(float angle) {
-        return angle + prevMotor;
+        return angle - accMotorMovement;
     }
 }
