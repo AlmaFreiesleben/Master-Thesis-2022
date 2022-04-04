@@ -12,8 +12,8 @@ public class Controller {
     private Chamber greenChamber;
     private boolean isRedFixed;
     private double radius = 0.8;
-    private double H = 3.5;
-    private double W = 3.5;
+    private double H = 3;
+    private double W = 3;
     private float prevMotor = 0;
 
     // TEST VARIABLES REMOVE!!! TODO
@@ -70,6 +70,21 @@ public class Controller {
         step(redChamber, greenChamber, 170);
     }
 
+    public void test_movement_of_chamber() {
+        step(greenChamber, redChamber, 90);
+        step(greenChamber, redChamber, 90 + 90);
+        step(greenChamber, redChamber, 90 + 90 + 90);
+        step(greenChamber, redChamber, 90 + 90 + 90 + 90);
+        step(greenChamber, redChamber, 90 + 90 + 90 + 90 + 90);
+        step(greenChamber, redChamber, 90 + 90 + 90 + 90 + 90 - 90);
+    }
+
+    public void test_motor_overflow() {
+        step(greenChamber, redChamber, -105);
+        step(redChamber, greenChamber, -90);
+        step(greenChamber, redChamber, -82 + - 105);
+    }
+
     private void step(Chamber moving, Chamber fixed, float motor) {
         fixChamberToFloor(fixed);
         sleep(500);
@@ -115,8 +130,8 @@ public class Controller {
     }
 
     private float predictNextMovingChamberPos(Chamber moving, Chamber fixed, float motor) {
-        float fixedX = getXofChamber(fixed);
-        float movingX = getXofChamber(moving);
+        float fixedX = getXOfChamber(fixed);
+        float movingX = getXOfChamber(moving);
 
         float predictedNextAngle = 0;
         float absoluteAngle = transformBackToAbsoluteCoordinateSystem(motor);
@@ -177,7 +192,7 @@ public class Controller {
         return position;
     }
 
-    private float getXofChamber(Chamber c) {
+    private float getXOfChamber(Chamber c) {
         FloatWA pos = getPositionOfHandle(c.getJoint());
         return pos.getArray()[0];
     }

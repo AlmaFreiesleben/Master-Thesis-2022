@@ -33,7 +33,9 @@ public class Main
             //c.test_chamber_reaching_motor_overflow_minus_2();
             //c.test_chamber_reaching_motor_overflow_minus_long();
             //c.test_chamber_reaching_motor_overflow_plus();
-            c.randomWalk();
+            //c.test_chamber_reaching_motor_overflow_minus_long();
+            //c.test_movement_of_chamber();
+            c.test_motor_overflow();
 
             sleep(2000);
             
