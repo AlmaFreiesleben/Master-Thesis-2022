@@ -12,8 +12,8 @@ public class Controller {
     private Chamber greenChamber;
     private boolean isRedFixed;
     private double radius = 0.8;
-    private double H = 3;
-    private double W = 3;
+    private double H = 3.5;
+    private double W = 3.5;
     private float prevMotor = 0;
 
     // TEST VARIABLES REMOVE!!! TODO
@@ -32,7 +32,7 @@ public class Controller {
 
     public void randomWalk() {
         while (true) { //TODO: while !isCovered()
-            int motor = new Random().nextInt(361) - 180;
+            float motor = new Random().nextInt(361) - 180;
 
             if (isRedFixed) {
                 step(greenChamber, redChamber, motor);
@@ -42,10 +42,32 @@ public class Controller {
         }
     }
 
-    public void test() {
+    public void test_chamber_moving_back_and_forth() {
         step(greenChamber, redChamber, -20);
         step(redChamber, greenChamber, 40);
         step(greenChamber, redChamber, 40);
+    }
+
+    public void test_chamber_reaching_motor_overflow_minus_1() {
+        step(greenChamber, redChamber, -20);
+        step(redChamber, greenChamber, -170);
+    }
+
+    public void test_chamber_reaching_motor_overflow_minus_2() {
+        step(greenChamber, redChamber, -170);
+        step(redChamber, greenChamber, -20);
+    }
+
+    public void test_chamber_reaching_motor_overflow_minus_long() {
+        step(greenChamber, redChamber, -170);
+        step(redChamber, greenChamber, -20);
+        step(greenChamber, redChamber, -20);
+        step(redChamber, greenChamber, -170);
+    }
+
+    public void test_chamber_reaching_motor_overflow_plus() {
+        step(greenChamber, redChamber, 20);
+        step(redChamber, greenChamber, 170);
     }
 
     private void step(Chamber moving, Chamber fixed, float motor) {
@@ -69,7 +91,7 @@ public class Controller {
             isRedFixed = !isRedFixed;
             prevMotor = motor;
 
-            if (Math.abs(test_x - pos.getArray()[0]) > 0.01 || Math.abs(test_y - pos.getArray()[1]) > 0.01) {
+            if (Math.abs(test_x - pos.getArray()[0]) > 0.1 || Math.abs(test_y - pos.getArray()[1]) > 0.1) {
                 System.out.println(cnt);
                 System.out.println("predicted x: " + test_x + " predicted y: " + test_y);
                 System.out.println("actual x: " + pos.getArray()[0] + " actual y: " + pos.getArray()[1]);
@@ -102,23 +124,38 @@ public class Controller {
         if (fixedX >= movingX) predictedNextAngle = (motor > 0) ? 180 + absoluteAngle : 180 - Math.abs(absoluteAngle);
         if (fixedX < movingX) predictedNextAngle = (motor > 0) ? absoluteAngle : 360 - Math.abs(absoluteAngle);
 
-        return normalizeAngle(predictedNextAngle);
+        return normalize(fixedX, movingX, motor, absoluteAngle, predictedNextAngle);
     }
 
     private float transformBackToAbsoluteCoordinateSystem(float motor) {
-        return normalizeMotor(motor + prevMotor);
-    }
-
-    private float normalizeMotor(float angle) {
-        if (angle > 180) return angle - 180;
-        if (angle < -180) return angle + 180;
-        return angle;
+        return motor + prevMotor;
     }
 
     private float normalizeAngle(float angle) {
-        if (angle > 360) return angle - 360;
-        if (angle < -360) return angle + 360;
+        if (angle >= 360) return angle - 360;
+        if (angle <= -360) return angle + 360;
+        if (angle > 180 && angle < 270) return angle - 180;
         return angle;
+    }
+
+    private float normalize(float fixedX, float movingX, float motor, float absAngle, float predAngle) {
+        if (fixedX >= movingX) {
+            if (motor > 0) { // 3 QUADRANT
+                if (absAngle > 180) return absAngle - 180;
+            }
+            if (motor < 0) { // 2 QUADRANT
+                if (absAngle < -180) return 360 - (Math.abs(absAngle) - 180);
+            }
+        }
+        if (fixedX < movingX) {
+            if (motor > 0) { // 1 QUADRANT
+                if (absAngle > 180) return absAngle - 180;
+            }
+            if (motor < 0) { // 4 QUADRANT
+                if (absAngle < -180) return 360 - Math.abs(absAngle);
+            }
+        }
+        return normalizeAngle(predAngle);
     }
 
     private void fixChamberToFloor(Chamber chamber) {

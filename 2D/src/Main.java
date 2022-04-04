@@ -28,7 +28,12 @@ public class Main
             sleep(2000);
 
             Controller c = new Controller(clientID, sim, handles);
-            c.test();
+            //c.test_chamber_moving_back_and_forth();
+            //c.test_chamber_reaching_motor_overflow_minus_1();
+            //c.test_chamber_reaching_motor_overflow_minus_2();
+            //c.test_chamber_reaching_motor_overflow_minus_long();
+            //c.test_chamber_reaching_motor_overflow_plus();
+            c.randomWalk();
 
             sleep(2000);
             
