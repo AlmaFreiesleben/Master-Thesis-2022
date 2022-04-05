@@ -3,13 +3,15 @@ import java.util.*;
 public class RandomWalkController {
 
     Lappa lappa;
+    World world;
 
-    public RandomWalkController(Lappa lappa) {
+    public RandomWalkController(Lappa lappa, World world) {
         this.lappa = lappa;
+        this.world = world;
     }
 
     public void randomWalk() {
-        while (true) { //TODO: while !isCovered()
+        while (!world.isCovered()) {
             float motor = new Random().nextInt(361) - 180;
 
             if (lappa.getIsRedFixed()) {
@@ -18,5 +20,6 @@ public class RandomWalkController {
                 lappa.step(motor);
             }
         }
+        System.out.println("World is covered");
     }
 }

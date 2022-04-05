@@ -4,25 +4,31 @@ import javafx.geometry.Point2D;
 public class Lappa {
 
     private final Simulator sim;
+    private final World world;
     private final Chamber redChamber;
     private final Chamber greenChamber;
     private boolean isRedFixed;
     private float accMotorMovement;
     double radius = 0.8;
-    double arenaH = 3.5;
-    double arenaW = 3.5;
+    double arenaH;
+    double arenaW;
 
     // TEST VARIABLES REMOVE!!! TODO
     double test_x = 0;
     double test_y = 0;
     int cnt = 1;
 
-    public Lappa(Simulator sim) {
+    public Lappa(Simulator sim, World world) {
         this.sim = sim;
+        this.world = world;
         this.redChamber = sim.getRedChamber();
         this.greenChamber = sim.getGreenChamber();
         isRedFixed = true;
         accMotorMovement = 0;
+        arenaH = world.getWorldH();
+        arenaW = world.getWorldW();
+        world.updateCoverage(0,0);
+        world.updateCoverage(0.8, 0);
     }
 
     public void step(float angle) {
@@ -70,10 +76,17 @@ public class Lappa {
                 System.out.println("actual x: " + pos.getArray()[0] + " actual y: " + pos.getArray()[1]);
             }
             cnt++;
+            Point2D nextPoint = getNextPoint(fixed, angle);
+            world.updateCoverage(nextPoint.getX(), nextPoint.getY());
         }
     }
 
     private boolean isFallingOfArena(Chamber fixed, float angle) {
+        Point2D nextPoint = getNextPoint(fixed, angle);
+        return Math.abs(nextPoint.getX()) > arenaW /2 || Math.abs(nextPoint.getY()) > arenaH /2;
+    }
+
+    private Point2D getNextPoint(Chamber fixed, float angle) {
         var pos = sim.getPositionOfHandle(fixed.getJoint());
         float fixedX = pos.getArray()[0];
         float fixedY = pos.getArray()[1];
@@ -87,7 +100,8 @@ public class Lappa {
             test_x = x;
             test_y = y;
 
-            return Math.abs(x) > arenaW /2 || Math.abs(y) > arenaH /2;
+            return new Point2D(x, y);
+
         } else {
             double x = fixedX + radius * -Math.cos(Math.toRadians(predictedNextAngle));
             double y = fixedY + radius * -Math.sin(Math.toRadians(predictedNextAngle));
@@ -95,7 +109,7 @@ public class Lappa {
             test_x = x;
             test_y = y;
 
-            return Math.abs(x) > arenaW /2 || Math.abs(y) > arenaH /2;
+            return new Point2D(x, y);
         }
     }
 
