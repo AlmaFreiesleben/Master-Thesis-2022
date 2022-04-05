@@ -7,10 +7,10 @@ public class Main
     {
         Simulator sim = new Simulator();
         Lappa lappa = new Lappa(sim);
-        //RandomWalkController random = new RandomWalkController(lappa);
-        //random.randomWalk();
-        Test test = new Test(lappa);
-        test.test_movement_of_lappa_90_times_4();
+        RandomWalkController random = new RandomWalkController(lappa);
+        random.randomWalk();
+        //Test test = new Test(lappa);
+        //test.test_movement_of_lappa_20_170();
         sim.stopSimulation();
     }
 }

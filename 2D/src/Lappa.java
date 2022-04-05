@@ -1,4 +1,5 @@
 import coppelia.FloatWA;
+import javafx.geometry.Point2D;
 
 public class Lappa {
 
@@ -7,6 +8,9 @@ public class Lappa {
     private final Chamber greenChamber;
     private boolean isRedFixed;
     private float accMotorMovement;
+    double radius = 0.8;
+    double arenaH = 3.5;
+    double arenaW = 3.5;
 
     // TEST VARIABLES REMOVE!!! TODO
     double test_x = 0;
@@ -52,10 +56,9 @@ public class Lappa {
     }
 
     private void moveChamber(Chamber moving, Chamber fixed, float angle) {
-        float predictedNextMove = predictNextChamberPos(moving, fixed, angle);
-        boolean hasCollided = isFallingOfArena(fixed, predictedNextMove);
+        boolean isFalling = isFallingOfArena(fixed, angle);
 
-        if (!hasCollided) {
+        if (!isFalling) {
             fixed.relativeRotateChamber(angle);
             isRedFixed = !isRedFixed;
             accMotorMovement += angle;
@@ -70,38 +73,33 @@ public class Lappa {
         }
     }
 
-    private float predictNextChamberPos(Chamber moving, Chamber fixed, float angle) {
-        float fixedX = fixed.getXOfChamber();
-        float movingX = moving.getXOfChamber();
-
-        float predictedNextAngle = 0;
-        float transformedAngle = transformBackToAbsoluteCoordinateSystem(angle);
-
-        if (fixedX >= movingX) predictedNextAngle = (angle > 0) ? 180 + transformedAngle : 180 - Math.abs(transformedAngle);
-        if (fixedX < movingX) predictedNextAngle = (angle > 0) ? transformedAngle : 360 - Math.abs(transformedAngle);
-
-        return transformedAngle;
-    }
-
-    private boolean isFallingOfArena(Chamber fixed, float predictedA) {
-        double radius = 0.8;
-        double H = 3.5;
-        double W = 3.5;
-
+    private boolean isFallingOfArena(Chamber fixed, float angle) {
         var pos = sim.getPositionOfHandle(fixed.getJoint());
         float fixedX = pos.getArray()[0];
         float fixedY = pos.getArray()[1];
 
-        double x = fixedX + radius * Math.cos(Math.toRadians(predictedA));
-        double y = fixedY + radius * Math.sin(Math.toRadians(predictedA));
+        float predictedNextAngle = predictNextChamberPos(angle);
 
-        test_x = x;
-        test_y = y;
+        if (isRedFixed) {
+            double x = fixedX + radius * Math.cos(Math.toRadians(predictedNextAngle));
+            double y = fixedY + radius * Math.sin(Math.toRadians(predictedNextAngle));
 
-        return Math.abs(x) > W/2 || Math.abs(y) > H/2;
+            test_x = x;
+            test_y = y;
+
+            return Math.abs(x) > arenaW /2 || Math.abs(y) > arenaH /2;
+        } else {
+            double x = fixedX + radius * -Math.cos(Math.toRadians(predictedNextAngle));
+            double y = fixedY + radius * -Math.sin(Math.toRadians(predictedNextAngle));
+
+            test_x = x;
+            test_y = y;
+
+            return Math.abs(x) > arenaW /2 || Math.abs(y) > arenaH /2;
+        }
     }
 
-    private float transformBackToAbsoluteCoordinateSystem(float angle) {
-        return angle - accMotorMovement;
+    private float predictNextChamberPos(float angle) {
+        return angle + accMotorMovement % 360;
     }
 }
