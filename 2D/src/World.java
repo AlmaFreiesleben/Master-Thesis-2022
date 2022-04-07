@@ -2,6 +2,7 @@ import javafx.geometry.Point2D;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.HashSet;
+import java.util.stream.Collectors;
 
 public class World {
 
@@ -29,13 +30,6 @@ public class World {
         return pointsToCover.isEmpty();
     }
 
-    public void updateCoverage(double x, double y) {
-        x = normalizeToPointInCoverage(x);
-        y = normalizeToPointInCoverage(y);
-        Point2D point = new Point2D(x,y);
-        if (pointsToCover.contains(point)) pointsToCover.remove(point);
-    }
-
     public void printCoverage() {
         System.out.println("size: " + pointsToCover.size());
     }
@@ -44,9 +38,17 @@ public class World {
         return new BigDecimal(coord).setScale(1, RoundingMode.HALF_UP).doubleValue();
     }
 
-    private double normalizeToPointInCoverage(double coord) {
-        coord = normalizeTo1Decimal(coord);
-        return (coord*10 % 2 == 0) ? coord : coord + 0.1;
+    public void updateCoverage(Point2D p) {
+        double currentShortestDistance = Integer.MAX_VALUE;
+        Point2D currentNearestPoint = p;
+        for (Point2D notCoveredPoint : pointsToCover) {
+            double distTo = p.distance(notCoveredPoint);
+            if (distTo < currentShortestDistance) {
+                currentShortestDistance = distTo;
+                currentNearestPoint = notCoveredPoint;
+            }
+        }
+        pointsToCover.remove(currentNearestPoint);
     }
 
     private void createSamplingOfPoints() {

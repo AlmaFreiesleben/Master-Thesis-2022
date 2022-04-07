@@ -27,8 +27,6 @@ public class Lappa {
         accMotorMovement = 0;
         arenaH = world.getWorldH();
         arenaW = world.getWorldW();
-        world.updateCoverage(0,0);
-        world.updateCoverage(0.8, 0);
     }
 
     public void step(float angle) {
@@ -69,7 +67,7 @@ public class Lappa {
             fixed.relativeRotateChamber(angle);
             isRedFixed = !isRedFixed;
             accMotorMovement += angle;
-            world.updateCoverage(nextPoint.getX(), nextPoint.getY());
+            world.updateCoverage(nextPoint);
 
             // TODO remove test print
             FloatWA pos = sim.getPositionOfHandle(moving.getJoint());
