@@ -5,11 +5,13 @@ public class World {
 
     private double H;
     private double W;
+    private double chamberDiameter;
     HashSet<Point2D> pointsToCover = new HashSet<>();
 
-    public World(double H, double W) {
+    public World(double H, double W, double chamberDiameter) {
         this.H = H;
         this.W = W;
+        this.chamberDiameter = chamberDiameter;
         createSamplingOfPoints();
     }
 
@@ -26,24 +28,32 @@ public class World {
     }
 
     public void updateCoverage(double x, double y) {
-        // TODO normalize to 1 decimal
+        x = Math.round(x*100)/100;
+        y = Math.round(y*100)/100;
         Point2D point = new Point2D(x,y);
         if (pointsToCover.contains(point)) pointsToCover.remove(point);
     }
 
     private void createSamplingOfPoints() {
-        int width = (int) Math.floor(W/0.4); // 0.4 is the size of a chamber of lappa.
-        int quadrantWidth = (int) Math.floor(width / 2);
+        int width = (int) Math.floor(W/chamberDiameter);
+        int equalWidth = (width % 2 == 0) ? width : width + 1;
+        int quadrantWidth = equalWidth / 2;
         double x = 0;
         for (int i = 0; i < quadrantWidth; i++) {
             double y = 0;
             for (int j = 0; j < quadrantWidth*2; j++) {
                 double loc_x = 0;
                 if (j % 2 == 0) loc_x = x;
-                else loc_x += 0.2;
+                else loc_x = x + 0.2;
 
                 if (loc_x == 0 && y == 0) {
                     pointsToCover.add(new Point2D(loc_x, y));
+                } else if (y == 0) {
+                    pointsToCover.add(new Point2D(loc_x, y));    // 1. quadrant
+                    pointsToCover.add(new Point2D(-loc_x, y));   // 2. quadrant
+                } else if (loc_x == 0) {
+                    pointsToCover.add(new Point2D(loc_x, y));    // 1. quadrant
+                    pointsToCover.add(new Point2D(loc_x, -y));   // 4. quadrant
                 } else {
                     pointsToCover.add(new Point2D(loc_x, y));    // 1. quadrant
                     pointsToCover.add(new Point2D(-loc_x, y));   // 2. quadrant

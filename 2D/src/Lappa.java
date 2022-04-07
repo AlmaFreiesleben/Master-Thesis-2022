@@ -9,9 +9,9 @@ public class Lappa {
     private final Chamber greenChamber;
     private boolean isRedFixed;
     private float accMotorMovement;
-    double radius = 0.8;
-    double arenaH;
-    double arenaW;
+    private double radius = 0.8;
+    private double arenaH;
+    private double arenaW;
 
     // TEST VARIABLES REMOVE!!! TODO
     double test_x = 0;
