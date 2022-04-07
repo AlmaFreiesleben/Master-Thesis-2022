@@ -14,6 +14,8 @@ public class RandomWalkController {
         while (!world.isCovered()) {
             float motor = new Random().nextInt(361) - 180;
 
+            world.printCoverage(); // TODO remove
+
             if (lappa.getIsRedFixed()) {
                 lappa.step(motor);
             } else {

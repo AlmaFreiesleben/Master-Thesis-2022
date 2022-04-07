@@ -13,7 +13,7 @@ public class Lappa {
     private double arenaH;
     private double arenaW;
 
-    // TEST VARIABLES REMOVE!!! TODO
+    // TODO TEST VARIABLES REMOVE!!!
     double test_x = 0;
     double test_y = 0;
     int cnt = 1;
@@ -62,13 +62,16 @@ public class Lappa {
     }
 
     private void moveChamber(Chamber moving, Chamber fixed, float angle) {
-        boolean isFalling = isFallingOfArena(fixed, angle);
+        Point2D nextPoint = getNextPoint(fixed, angle);
+        boolean isFalling = isFallingOfArena(nextPoint);
 
         if (!isFalling) {
             fixed.relativeRotateChamber(angle);
             isRedFixed = !isRedFixed;
             accMotorMovement += angle;
+            world.updateCoverage(nextPoint.getX(), nextPoint.getY());
 
+            // TODO remove test print
             FloatWA pos = sim.getPositionOfHandle(moving.getJoint());
             if (Math.abs(test_x - pos.getArray()[0]) > 0.1 || Math.abs(test_y - pos.getArray()[1]) > 0.1) {
                 System.out.println(cnt);
@@ -76,13 +79,10 @@ public class Lappa {
                 System.out.println("actual x: " + pos.getArray()[0] + " actual y: " + pos.getArray()[1]);
             }
             cnt++;
-            Point2D nextPoint = getNextPoint(fixed, angle);
-            world.updateCoverage(nextPoint.getX(), nextPoint.getY());
         }
     }
 
-    private boolean isFallingOfArena(Chamber fixed, float angle) {
-        Point2D nextPoint = getNextPoint(fixed, angle);
+    private boolean isFallingOfArena(Point2D nextPoint) {
         return Math.abs(nextPoint.getX()) > arenaW /2 || Math.abs(nextPoint.getY()) > arenaH /2;
     }
 
