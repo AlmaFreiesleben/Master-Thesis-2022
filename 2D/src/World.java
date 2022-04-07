@@ -2,7 +2,6 @@ import javafx.geometry.Point2D;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.HashSet;
-import java.util.stream.Collectors;
 
 public class World {
 
@@ -10,6 +9,7 @@ public class World {
     private double W;
     private double chamberDiameter;
     private HashSet<Point2D> pointsToCover = new HashSet<>();
+    private HashSet<Point2D> unCoveredPoints = new HashSet<>();
 
     public World(double H, double W, double chamberDiameter) {
         this.H = H;
@@ -27,11 +27,12 @@ public class World {
     }
 
     public boolean isCovered() {
-        return pointsToCover.isEmpty();
+        return unCoveredPoints.isEmpty();
     }
 
     public void printCoverage() {
-        System.out.println("size: " + pointsToCover.size());
+        System.out.println("size of original sample: " + pointsToCover.size());
+        System.out.println("size of missing points to cover: " + unCoveredPoints.size());
     }
 
     private double normalizeTo1Decimal(double coord) {
@@ -48,7 +49,7 @@ public class World {
                 currentNearestPoint = notCoveredPoint;
             }
         }
-        pointsToCover.remove(currentNearestPoint);
+        unCoveredPoints.remove(currentNearestPoint);
     }
 
     private void createSamplingOfPoints() {
@@ -84,5 +85,6 @@ public class World {
             }
             x += 0.4;
         }
+        unCoveredPoints.addAll(pointsToCover);
     }
 }
