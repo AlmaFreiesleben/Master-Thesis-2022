@@ -30,17 +30,17 @@ public class RandomWalkController {
 
     public void randomWalkRecordResult() {
         ArrayList<String> coveragePercentage = new ArrayList<>();
-        ArrayList<String> angle = new ArrayList<>();
+        ArrayList<String> time = new ArrayList<>();
         int numSteps = 0;
 
         while (!world.isCovered()) {
 
             if (numSteps % 10 == 0) {
-                double percent = 100 - world.getCoveragePercentage();
+                double percent = world.getCoveragePercentage();
                 float absAngle = lappa.getAbsoluteMotorMovement();
+                float t = convertAbsAngleToTimeInMinutes(absAngle, numSteps);
                 coveragePercentage.add(Double.toString(percent));
-                angle.add(Float.toString(absAngle));
-                System.out.println("Percentage covered: " + percent);
+                time.add(Float.toString(t));
             }
 
             float motor = new Random().nextInt(361) - 180;
@@ -56,7 +56,7 @@ public class RandomWalkController {
 
         System.out.println("World is covered");
         writeResultsToCSV(convertListToArray(coveragePercentage), "coverage_percentage.csv");
-        writeResultsToCSV(convertListToArray(angle), "angle.csv");
+        writeResultsToCSV(convertListToArray(time), "time.csv");
     }
 
     private void writeResultsToCSV(String[] data, String path) {
@@ -74,5 +74,9 @@ public class RandomWalkController {
     private String[] convertListToArray(ArrayList<String> data) {
         String[] arr = new String[data.size()];
         return data.toArray(arr);
+    }
+
+    private float convertAbsAngleToTimeInMinutes(float absAngle, int numSteps) {
+        return (numSteps * 3 + absAngle * 1/2) / 60;
     }
 }

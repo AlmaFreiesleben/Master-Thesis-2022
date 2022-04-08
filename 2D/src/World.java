@@ -33,7 +33,7 @@ public class World {
     public double getCoveragePercentage() {
         double totalPointsToCover = pointsToCover.size();
         double restToCover = unCoveredPoints.size();
-        return (restToCover / totalPointsToCover) * 100;
+        return 100 - ((restToCover / totalPointsToCover) * 100);
     }
 
     private double normalizeTo1Decimal(double coord) {
