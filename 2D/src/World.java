@@ -30,9 +30,10 @@ public class World {
         return unCoveredPoints.isEmpty();
     }
 
-    public void printCoverage() {
-        System.out.println("size of original sample: " + pointsToCover.size());
-        System.out.println("size of missing points to cover: " + unCoveredPoints.size());
+    public double getCoveragePercentage() {
+        double totalPointsToCover = pointsToCover.size();
+        double restToCover = unCoveredPoints.size();
+        return (restToCover / totalPointsToCover) * 100;
     }
 
     private double normalizeTo1Decimal(double coord) {
