@@ -73,6 +73,8 @@ public class Lappa {
 
     public float getAbsoluteMotorMovement() { return absoluteMotorMovement; }
 
+    public void preloadAbsoluteMotorMovement() { absoluteMotorMovement = 0; }
+
     private void moveChamber(Chamber moving, Chamber fixed, float angle, boolean isRecordingResults) {
         Point2D nextPoint = getNextPoint(fixed, angle, isRecordingResults);
         boolean isFalling = isFallingOfArena(nextPoint);

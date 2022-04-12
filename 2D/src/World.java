@@ -53,6 +53,12 @@ public class World {
         unCoveredPoints.remove(currentNearestPoint);
     }
 
+    public void preloadWorld() {
+        pointsToCover = new HashSet<>();
+        unCoveredPoints = new HashSet<>();
+        createSamplingOfPoints();
+    }
+
     private void createSamplingOfPoints() {
         int width = (int) Math.floor(W/chamberDiameter);
         int equalWidth = (width % 2 == 0) ? width : width + 1;

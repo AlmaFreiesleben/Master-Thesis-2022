@@ -10,6 +10,10 @@ public class RandomWalkController {
     private final Lappa lappa;
     private final World world;
 
+    // Used to record results
+    private List<String[]> randomWalkCoverageResults = new ArrayList<>();
+    private List<String[]> randomWalkTimeResults = new ArrayList<>();
+
     public RandomWalkController(Lappa lappa, World world) {
         this.lappa = lappa;
         this.world = world;
@@ -55,16 +59,21 @@ public class RandomWalkController {
         }
 
         System.out.println("World is covered");
-        writeResultsToCSV(convertListToArray(coveragePercentage), "coverage_percentage.csv");
-        writeResultsToCSV(convertListToArray(time), "time.csv");
+        randomWalkCoverageResults.add(convertListToArray(coveragePercentage));
+        randomWalkTimeResults.add(convertListToArray(time));
     }
 
-    private void writeResultsToCSV(String[] data, String path) {
+    public void writeToFiles() {
+        writeResultsToCSV(randomWalkCoverageResults, "coverage_percentage.csv");
+        writeResultsToCSV(randomWalkTimeResults, "time.csv");
+    }
+
+    private void writeResultsToCSV(List<String[]> data, String path) {
         File file = new File(path);
         try {
             FileWriter output = new FileWriter(file);
             CSVWriter writer = new CSVWriter(output);
-            writer.writeNext(data, false);
+            writer.writeAll(data, false);
             writer.close();
         } catch (IOException e) {
             e.printStackTrace();
