@@ -1,6 +1,9 @@
 import coppelia.FloatWA;
 import javafx.geometry.Point2D;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Lappa {
 
     private final Simulator sim;
@@ -84,7 +87,8 @@ public class Lappa {
             isRedFixed = !isRedFixed;
             accMotorMovement += angle;
             absoluteMotorMovement += Math.abs(angle);
-            world.updateCoverage(nextPoint);
+            List<Point2D> coveredPoints = getSampleOfCoveredPointsOnArc(fixed, angle, isRecordingResults);
+            world.updateCoverage(coveredPoints);
 
             // TODO remove test print
             if (!isRecordingResults) {
@@ -141,5 +145,20 @@ public class Lappa {
 
     private float predictNextChamberPos(float angle) {
         return angle + accMotorMovement % 360;
+    }
+
+    private List<Point2D> getSampleOfCoveredPointsOnArc(Chamber fixed, float angle, boolean isRecordingResults) {
+        ArrayList<Point2D> coveredPoints = new ArrayList<>();
+
+        int stepOnArc = 10;
+        int numPointsOnArc = Math.abs(Math.round(angle/stepOnArc));
+        float angleFraction = angle;
+        for (int i = 0; i < numPointsOnArc; i++) {
+            Point2D p = getNextPoint(fixed, angleFraction, isRecordingResults);
+            coveredPoints.add(p);
+            angleFraction = (angle > 0) ? angleFraction-stepOnArc : angleFraction+stepOnArc;
+        }
+
+        return coveredPoints;
     }
 }
