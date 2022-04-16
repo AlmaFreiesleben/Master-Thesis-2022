@@ -59,7 +59,7 @@ public class World {
                 currentNearestPoint = notCoveredPoint;
             }
         }
-        if (currentShortestDistance < chamberDiameter/2) unCoveredPoints.remove(currentNearestPoint);
+        if (currentShortestDistance < chamberDiameter/4) unCoveredPoints.remove(currentNearestPoint);
     }
 
     public void preloadWorld() {
