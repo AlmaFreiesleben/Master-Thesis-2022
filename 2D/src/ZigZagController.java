@@ -10,7 +10,7 @@ public class ZigZagController extends Controller {
     public void zigZagWalk() {
         boolean isFalling = false;
         while (!world.isCovered()) {
-            float motor = 45;
+            float motor = 75;
             if (isFalling) motor = new Random().nextInt(361) - 180;
 
             if (lappa.getIsRedFixed()) {
