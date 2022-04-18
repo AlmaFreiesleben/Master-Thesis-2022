@@ -36,17 +36,19 @@ public class Lappa {
         currentFixedPosition = new Point2D(0,0);
     }
 
-    public void step(float angle) {
+    public boolean step(float angle) {
+        boolean isFalling = false;
         int floor = sim.getFloor();
         if (isRedFixed) {
             redChamber.fixChamberToFloor(floor);
-            moveChamber(greenChamber, redChamber, angle, false);
+            isFalling = moveChamber(greenChamber, redChamber, angle, false);
             redChamber.freeChamberFromFloor();
         } else {
             greenChamber.fixChamberToFloor(floor);
-            moveChamber(redChamber, greenChamber, angle, false);
+            isFalling = moveChamber(redChamber, greenChamber, angle, false);
             greenChamber.freeChamberFromFloor();
         }
+        return isFalling;
     }
 
     public void simpleStep(float angle) {
@@ -62,12 +64,14 @@ public class Lappa {
         }
     }
 
-    public void stepWithoutSim(float angle) {
+    public boolean stepWithoutSim(float angle) {
+        boolean isFalling = false;
         if (isRedFixed) {
-            moveChamber(greenChamber, redChamber, angle, true);
+            isFalling = moveChamber(greenChamber, redChamber, angle, true);
         } else {
-            moveChamber(redChamber, greenChamber, angle, true);
+            isFalling = moveChamber(redChamber, greenChamber, angle, true);
         }
+        return isFalling;
     }
 
     public boolean getIsRedFixed() {
@@ -78,7 +82,7 @@ public class Lappa {
 
     public void preloadAbsoluteMotorMovement() { absoluteMotorMovement = 0; }
 
-    private void moveChamber(Chamber moving, Chamber fixed, float angle, boolean isRecordingResults) {
+    private boolean moveChamber(Chamber moving, Chamber fixed, float angle, boolean isRecordingResults) {
         Point2D nextPoint = getTargetPoint(fixed, angle, isRecordingResults);
         boolean isFalling = isFallingOfArena(nextPoint);
 
@@ -102,6 +106,7 @@ public class Lappa {
             }
             currentFixedPosition = nextPoint;
         }
+        return isFalling;
     }
 
     private boolean isFallingOfArena(Point2D nextPoint) {

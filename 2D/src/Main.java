@@ -8,8 +8,15 @@ public class Main
         Simulator sim = new Simulator();
         World world = new World(4, 4, 0.4);
         Lappa lappa = new Lappa(sim, world);
-        RandomWalkController random = new RandomWalkController(lappa, world);
-        random.randomWalk();
+        ZigZagController c = new ZigZagController(lappa, world);
+        c.zigZagRecordResult();
+        c.writeToFiles();
+
+        world.preloadWorld();
+        lappa.preloadAbsoluteMotorMovement();
+        c.zigZagRecordResult();
+        c.writeToFiles();
+
         sim.stopSimulation();
     }
 }

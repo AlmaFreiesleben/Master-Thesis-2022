@@ -1,22 +1,9 @@
-import com.opencsv.CSVWriter;
-
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.*;
 
-public class RandomWalkController {
-
-    private final Lappa lappa;
-    private final World world;
-
-    // Used to record results
-    private List<String[]> randomWalkCoverageResults = new ArrayList<>();
-    private List<String[]> randomWalkTimeResults = new ArrayList<>();
+public class RandomWalkController extends Controller {
 
     public RandomWalkController(Lappa lappa, World world) {
-        this.lappa = lappa;
-        this.world = world;
+        super(lappa, world);
     }
 
     public void randomWalk() {
@@ -59,33 +46,7 @@ public class RandomWalkController {
         }
 
         System.out.println("World is covered");
-        randomWalkCoverageResults.add(convertListToArray(coveragePercentage));
-        randomWalkTimeResults.add(convertListToArray(time));
-    }
-
-    public void writeToFiles() {
-        writeResultsToCSV(randomWalkCoverageResults, "coverage_percentage.csv");
-        writeResultsToCSV(randomWalkTimeResults, "time.csv");
-    }
-
-    private void writeResultsToCSV(List<String[]> data, String path) {
-        File file = new File(path);
-        try {
-            FileWriter output = new FileWriter(file);
-            CSVWriter writer = new CSVWriter(output);
-            writer.writeAll(data, false);
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private String[] convertListToArray(ArrayList<String> data) {
-        String[] arr = new String[data.size()];
-        return data.toArray(arr);
-    }
-
-    private float convertAbsAngleToTimeInMinutes(float absAngle, int numSteps) {
-        return (numSteps * 3 + absAngle * 1/2) / 60;
+        coverageResults.add(convertListToArray(coveragePercentage));
+        timeResults.add(convertListToArray(time));
     }
 }

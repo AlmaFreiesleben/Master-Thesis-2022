@@ -1,23 +1,56 @@
-public class ZigZagController {
+import java.util.ArrayList;
+import java.util.Random;
 
-    private final Lappa lappa;
-    private final World world;
+public class ZigZagController extends Controller {
 
     public ZigZagController(Lappa lappa, World world) {
-        this.lappa = lappa;
-        this.world = world;
+        super(lappa, world);
     }
 
     public void zigZagWalk() {
+        boolean isFalling = false;
         while (!world.isCovered()) {
-            float motor = 75;
+            float motor = 45;
+            if (isFalling) motor = new Random().nextInt(361) - 180;
 
             if (lappa.getIsRedFixed()) {
-                lappa.step(motor);
+                isFalling = lappa.step(motor);
             } else {
-                lappa.step(-motor);
+                isFalling = lappa.step(-motor);
             }
         }
+    }
+
+    public void zigZagRecordResult() {
+        ArrayList<String> coveragePercentage = new ArrayList<>();
+        ArrayList<String> time = new ArrayList<>();
+        int numSteps = 0;
+        boolean isFalling = false;
+
+        while (!world.isCovered()) {
+
+            if (numSteps % 10 == 0) {
+                double percent = world.getCoveragePercentage();
+                float absAngle = lappa.getAbsoluteMotorMovement();
+                float t = convertAbsAngleToTimeInMinutes(absAngle, numSteps);
+                coveragePercentage.add(Double.toString(percent));
+                time.add(Float.toString(t));
+            }
+
+            float motor = 45;
+            if (isFalling) motor = new Random().nextInt(361) - 180;
+
+            if (lappa.getIsRedFixed()) {
+                isFalling = lappa.stepWithoutSim(motor);
+            } else {
+                isFalling = lappa.stepWithoutSim(-motor);
+            }
+
+            numSteps++;
+        }
+
         System.out.println("World is covered");
+        coverageResults.add(convertListToArray(coveragePercentage));
+        timeResults.add(convertListToArray(time));
     }
 }
