@@ -17,6 +17,36 @@ public class Main
         c.zigZagRecordResult();
         c.writeToFiles();
 
+        world.preloadWorld();
+        lappa.preloadAbsoluteMotorMovement();
+        c.zigZagRecordResult();
+        c.writeToFiles();
+
+        world.preloadWorld();
+        lappa.preloadAbsoluteMotorMovement();
+        c.zigZagRecordResult();
+        c.writeToFiles();
+
+        world.preloadWorld();
+        lappa.preloadAbsoluteMotorMovement();
+        c.zigZagRecordResult();
+        c.writeToFiles();
+
+        world.preloadWorld();
+        lappa.preloadAbsoluteMotorMovement();
+        c.zigZagRecordResult();
+        c.writeToFiles();
+
+        world.preloadWorld();
+        lappa.preloadAbsoluteMotorMovement();
+        c.zigZagRecordResult();
+        c.writeToFiles();
+
+        world.preloadWorld();
+        lappa.preloadAbsoluteMotorMovement();
+        c.zigZagRecordResult();
+        c.writeToFiles();
+
         sim.stopSimulation();
     }
 }
