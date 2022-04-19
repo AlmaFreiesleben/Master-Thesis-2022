@@ -43,7 +43,6 @@ public class World {
     }
 
     public void updateCoverage(List<Point2D> points) {
-        System.out.println(unCoveredPoints.size());
         for (Point2D p : points) {
             updateCoverage(p);
         }

@@ -1,5 +1,4 @@
 import matplotlib.pyplot as plt
-import numpy as np
 import csv
 
 mono_font = {'fontname':'monospace'}
@@ -19,16 +18,16 @@ with open('time.csv') as csvfile:
 x = []
 y = []
 def compute_mean():
-    for i in range(250):
-        mean_time = (time_data[0][i] + time_data[0][i] + time_data[0][i] + time_data[0][i] + time_data[0][i]) / 5
+    for i in range(150):
+        mean_time = (time_data[0][i] + time_data[1][i] + time_data[2][i] + time_data[3][i] + time_data[4][i] + time_data[5][i] + time_data[6][i] + time_data[7][i] + time_data[8][i] + time_data[9][i]) / 10
         x.append(mean_time)
-        mean_cov = (cov_data[0][i] + cov_data[1][i] + cov_data[2][i] + cov_data[3][i] + cov_data[4][i]) / 5
+        mean_cov = (cov_data[0][i] + cov_data[1][i] + cov_data[2][i] + cov_data[3][i] + cov_data[4][i] + cov_data[5][i] + cov_data[6][i] + cov_data[7][i] + cov_data[8][i] + cov_data[9][i]) / 10
         y.append(mean_cov)
-    x.append(time_data[1][len(time_data[1])-1])
-    y.append(cov_data[1][len(cov_data[1])-1])
+    x.append(time_data[5][len(time_data[5])-1])
+    y.append(cov_data[5][len(cov_data[5])-1])
 
 def plot_data():
-    for i in range(5):
+    for i in range(10):
         plt.scatter(time_data[i], cov_data[i], s=1, c='hotpink')
 
 def plot_mean():
@@ -40,7 +39,7 @@ def plot_labels():
     plt.xlabel("Time in minutes", **mono_font)
     plt.ylabel("Coverage in percent", **mono_font)
     plt.grid()
-    plt.savefig("graph_zigzag_5x10_5_runs.png")
+    plt.savefig("graph_zigzag_5x10_10_runs.png")
     plt.show()
 
 plot_data()
