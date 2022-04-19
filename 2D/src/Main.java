@@ -3,10 +3,11 @@ public class Main
     public static void main(String[] args)
     {
         Simulator sim = new Simulator();
-        World world = new World(4, 4, 0.4);
+        World world = new World(3.5, 3.5, 0.4);
         Lappa lappa = new Lappa(sim, world);
-        RandomWalkController c = new RandomWalkController(lappa, world);
-        c.randomWalkRecordResult();
+        ZigZagController c = new ZigZagController(lappa, world);
+        c.zigZagWalk();
+        /*c.randomWalkRecordResult();
         c.writeToFiles();
 
         world.preloadWorld();
@@ -52,7 +53,7 @@ public class Main
         world.preloadWorld();
         lappa.preloadAbsoluteMotorMovement();
         c.randomWalkRecordResult();
-        c.writeToFiles();
+        c.writeToFiles();*/
 
         sim.stopSimulation();
     }
