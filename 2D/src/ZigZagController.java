@@ -1,28 +1,31 @@
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Random;
 
-public class RandomWalkController extends Controller {
+public class ZigZagController extends Controller {
 
-    public RandomWalkController(Lappa lappa, World world) {
+    public ZigZagController(Lappa lappa, World world) {
         super(lappa, world);
     }
 
-    public void randomWalk() {
+    public void zigZagWalk() {
+        boolean isFalling = false;
         while (!world.isCovered()) {
-            float motor = new Random().nextInt(361) - 180;
+            float motor = 75;
+            if (isFalling) motor = new Random().nextInt(361) - 180;
 
             if (lappa.getIsRedFixed()) {
-                lappa.step(motor);
+                isFalling = lappa.step(motor);
             } else {
-                lappa.step(motor);
+                isFalling = lappa.step(-motor);
             }
         }
-        System.out.println("World is covered");
     }
 
-    public void randomWalkRecordResult() {
+    public void zigZagRecordResult() {
         ArrayList<String> coveragePercentage = new ArrayList<>();
         ArrayList<String> time = new ArrayList<>();
         int numSteps = 0;
+        boolean isFalling = false;
 
         while (!world.isCovered()) {
 
@@ -34,12 +37,13 @@ public class RandomWalkController extends Controller {
                 time.add(Float.toString(t));
             }
 
-            float motor = new Random().nextInt(361) - 180;
+            float motor = 95;
+            if (isFalling) motor = new Random().nextInt(361) - 180;
 
             if (lappa.getIsRedFixed()) {
-                lappa.stepWithoutSim(motor);
+                isFalling = lappa.stepWithoutSim(motor);
             } else {
-                lappa.stepWithoutSim(motor);
+                isFalling = lappa.stepWithoutSim(-motor);
             }
 
             numSteps++;

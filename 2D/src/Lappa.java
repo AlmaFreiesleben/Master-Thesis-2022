@@ -1,6 +1,9 @@
 import coppelia.FloatWA;
 import javafx.geometry.Point2D;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Lappa {
 
     private final Simulator sim;
@@ -33,17 +36,19 @@ public class Lappa {
         currentFixedPosition = new Point2D(0,0);
     }
 
-    public void step(float angle) {
+    public boolean step(float angle) {
+        boolean isFalling = false;
         int floor = sim.getFloor();
         if (isRedFixed) {
             redChamber.fixChamberToFloor(floor);
-            moveChamber(greenChamber, redChamber, angle, false);
+            isFalling = moveChamber(greenChamber, redChamber, angle, false);
             redChamber.freeChamberFromFloor();
         } else {
             greenChamber.fixChamberToFloor(floor);
-            moveChamber(redChamber, greenChamber, angle, false);
+            isFalling = moveChamber(redChamber, greenChamber, angle, false);
             greenChamber.freeChamberFromFloor();
         }
+        return isFalling;
     }
 
     public void simpleStep(float angle) {
@@ -59,12 +64,14 @@ public class Lappa {
         }
     }
 
-    public void stepWithoutSim(float angle) {
+    public boolean stepWithoutSim(float angle) {
+        boolean isFalling = false;
         if (isRedFixed) {
-            moveChamber(greenChamber, redChamber, angle, true);
+            isFalling = moveChamber(greenChamber, redChamber, angle, true);
         } else {
-            moveChamber(redChamber, greenChamber, angle, true);
+            isFalling = moveChamber(redChamber, greenChamber, angle, true);
         }
+        return isFalling;
     }
 
     public boolean getIsRedFixed() {
@@ -73,8 +80,10 @@ public class Lappa {
 
     public float getAbsoluteMotorMovement() { return absoluteMotorMovement; }
 
-    private void moveChamber(Chamber moving, Chamber fixed, float angle, boolean isRecordingResults) {
-        Point2D nextPoint = getNextPoint(fixed, angle, isRecordingResults);
+    public void preloadAbsoluteMotorMovement() { absoluteMotorMovement = 0; }
+
+    private boolean moveChamber(Chamber moving, Chamber fixed, float angle, boolean isRecordingResults) {
+        Point2D nextPoint = getTargetPoint(fixed, angle, isRecordingResults);
         boolean isFalling = isFallingOfArena(nextPoint);
 
         if (!isFalling) {
@@ -82,7 +91,8 @@ public class Lappa {
             isRedFixed = !isRedFixed;
             accMotorMovement += angle;
             absoluteMotorMovement += Math.abs(angle);
-            world.updateCoverage(nextPoint);
+            List<Point2D> coveredPoints = getSampleOfCoveredPointsOnArc(fixed, angle, isRecordingResults);
+            world.updateCoverage(coveredPoints);
 
             // TODO remove test print
             if (!isRecordingResults) {
@@ -96,13 +106,14 @@ public class Lappa {
             }
             currentFixedPosition = nextPoint;
         }
+        return isFalling;
     }
 
     private boolean isFallingOfArena(Point2D nextPoint) {
-        return Math.abs(nextPoint.getX()) > arenaW /2 || Math.abs(nextPoint.getY()) > arenaH /2;
+        return Math.abs(nextPoint.getX()) > arenaW/2 || Math.abs(nextPoint.getY()) > arenaH/2;
     }
 
-    private Point2D getNextPoint(Chamber fixed, float angle, boolean isRecordingResults) {
+    private Point2D getFixedCenter(Chamber fixed, boolean isRecordingResults) {
         double fixedX = 0;
         double fixedY = 0;
 
@@ -115,14 +126,20 @@ public class Lappa {
             fixedY = currentFixedPosition.getY();
         }
 
+        return new Point2D(fixedX, fixedY);
+    }
+
+    private Point2D getPointOnPerimeter(float angle, double fixedX, double fixedY, boolean isGettingTargetPoint) {
         float predictedNextAngle = predictNextChamberPos(angle);
 
         if (isRedFixed) {
             double x = fixedX + radius * Math.cos(Math.toRadians(predictedNextAngle));
             double y = fixedY + radius * Math.sin(Math.toRadians(predictedNextAngle));
 
-            test_x = x;
-            test_y = y;
+            if (isGettingTargetPoint) {
+                test_x = x;
+                test_y = y;
+            }
 
             return new Point2D(x, y);
 
@@ -130,8 +147,10 @@ public class Lappa {
             double x = fixedX + radius * -Math.cos(Math.toRadians(predictedNextAngle));
             double y = fixedY + radius * -Math.sin(Math.toRadians(predictedNextAngle));
 
-            test_x = x;
-            test_y = y;
+            if (isGettingTargetPoint) {
+                test_x = x;
+                test_y = y;
+            }
 
             return new Point2D(x, y);
         }
@@ -139,5 +158,32 @@ public class Lappa {
 
     private float predictNextChamberPos(float angle) {
         return angle + accMotorMovement % 360;
+    }
+
+    private List<Point2D> getSampleOfCoveredPointsOnArc(Chamber fixed, float angle, boolean isRecordingResults) {
+        ArrayList<Point2D> coveredPoints = new ArrayList<>();
+
+        Point2D fixedCenter = getFixedCenter(fixed, isRecordingResults);
+        double fixedX = fixedCenter.getX();
+        double fixedY = fixedCenter.getY();
+
+        int stepOnArc = 10;
+        int numPointsOnArc = Math.abs(Math.round(angle/stepOnArc));
+        float angleFraction = angle;
+        for (int i = 0; i < numPointsOnArc; i++) {
+            Point2D p = getPointOnPerimeter(angleFraction, fixedX, fixedY, false);
+            coveredPoints.add(p);
+            angleFraction = (angle > 0) ? angleFraction-stepOnArc : angleFraction+stepOnArc;
+        }
+
+        return coveredPoints;
+    }
+
+    private Point2D getTargetPoint(Chamber fixed, float angle, boolean isRecordingResults) {
+        Point2D fixedCenter = getFixedCenter(fixed, isRecordingResults);
+        double fixedX = fixedCenter.getX();
+        double fixedY = fixedCenter.getY();
+
+        return getPointOnPerimeter(angle, fixedX, fixedY, true);
     }
 }
