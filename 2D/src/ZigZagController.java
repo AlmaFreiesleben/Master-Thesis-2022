@@ -37,7 +37,7 @@ public class ZigZagController extends Controller {
                 time.add(Float.toString(t));
             }
 
-            float motor = 45;
+            float motor = 95;
             if (isFalling) motor = new Random().nextInt(361) - 180;
 
             if (lappa.getIsRedFixed()) {

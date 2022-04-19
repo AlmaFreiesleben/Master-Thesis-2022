@@ -71,11 +71,15 @@ public class World {
     private void createSamplingOfPoints() {
         int width = (int) Math.floor(W/chamberDiameter);
         int equalWidth = (width % 2 == 0) ? width : width + 1;
+        int height = (int) Math.floor(H/chamberDiameter);
+        int equalHeight = (height % 2 == 0) ? height : height + 1;
         int quadrantWidth = equalWidth / 2;
+        int quadrantHeight = (W == H) ? equalWidth / 2 : equalHeight / 2;
+
         double x = 0;
         for (int i = 0; i < quadrantWidth; i++) {
             double y = 0;
-            for (int j = 0; j < quadrantWidth*2; j++) {
+            for (int j = 0; j < quadrantHeight*2; j++) {
                 double loc_x = 0;
                 if (j % 2 == 0) loc_x = x;
                 else loc_x = x + 0.2;

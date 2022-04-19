@@ -36,7 +36,7 @@ t5 = np.maximum(tt5, zero_array_5)
 x = []
 y = []
 def compute_mean():
-    for i in range(330):
+    for i in range(306):
         mean_time = (t1[i] + t2[i] + t3[i] + t4[i] + t5[i]) / 5
         x.append(mean_time)
         mean_cov = (c1[i] + c2[i] + c3[i] + c4[i] + c5[i]) / 5
@@ -53,7 +53,7 @@ plt.scatter(t5, c5, s=1, c='hotpink')
 compute_mean()
 plt.plot(x, y, linewidth=2, color='darkslateblue')
 
-plt.title('Wall Bumping Walk', **mono_font)
+plt.title('Wall Bumping Walk (8x8)', **mono_font)
 plt.xlabel("Time in minutes", **mono_font)
 plt.ylabel("Coverage in percent", **mono_font)
 plt.grid()
