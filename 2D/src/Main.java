@@ -8,6 +8,27 @@ public class Main
         ZigZagController c = new ZigZagController(lappa, world);
         c.zigZagRecordResult();
         c.writeToFiles();
+
+        world.preloadWorld();
+        lappa.preloadAbsoluteMotorMovement();
+        c.zigZagRecordResult();
+        c.writeToFiles();
+
+        world.preloadWorld();
+        lappa.preloadAbsoluteMotorMovement();
+        c.zigZagRecordResult();
+        c.writeToFiles();
+
+        world.preloadWorld();
+        lappa.preloadAbsoluteMotorMovement();
+        c.zigZagRecordResult();
+        c.writeToFiles();
+
+        world.preloadWorld();
+        lappa.preloadAbsoluteMotorMovement();
+        c.zigZagRecordResult();
+        c.writeToFiles();
+
         sim.stopSimulation();
     }
 }
