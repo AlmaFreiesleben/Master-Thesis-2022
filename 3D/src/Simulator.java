@@ -38,7 +38,7 @@ public class Simulator {
         api.simxFinish(clientID);
     }
 
-    public int getFloor() {
+    private int getFloor() {
         return handles[0];
     }
 
@@ -80,8 +80,8 @@ public class Simulator {
         sleep(500);
     }
 
-    public void fixChamberToFloor(int dummy2, int floor) {
-        api.simxSetObjectParent(clientID, dummy2, floor, true, api.simx_opmode_blocking);
+    public void fixChamberToFloor(int dummy2) {
+        api.simxSetObjectParent(clientID, dummy2, getFloor(), true, api.simx_opmode_blocking);
         sleep(500);
     }
 

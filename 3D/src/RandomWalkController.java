@@ -9,7 +9,7 @@ public class RandomWalkController extends Controller {
     public void clean() {
         while (!world.isAllCleaningZonesCovered(lappa.getCurrentCleaningZone())) {
             boolean isZoneCovered = randomWalk();
-            if (isZoneCovered) {
+            if (isZoneCovered && !(lappa.getCurrentCleaningZone() == 'D')) {
                 lappa.moveToNextCleaningZone();
             }
         }

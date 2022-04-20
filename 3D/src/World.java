@@ -5,15 +5,24 @@ import java.util.HashMap;
 
 public class World {
 
-    private Sphere sphere;
+    //private Sphere sphere;
     private double chamberSize;
     private HashMap<Character, Point3D> entries;
-    private ArrayList<Point3D> coverage;
+    private HashMap<Character, ArrayList<Point3D>> coverage;
 
-    public World(int radius, double chamberSize) {
-        this.sphere = new Sphere(radius);
+    public World(double radius, double chamberSize) {
+        //this.sphere = new Sphere(radius);
         this.chamberSize = chamberSize;
-        coverage = new ArrayList<>();
+        initEntriesAndCoverage();
+    }
+
+    private void initEntriesAndCoverage() {
+        coverage = new HashMap<>();
+        coverage.put('A', new ArrayList<>());
+        coverage.put('B', new ArrayList<>());
+        coverage.put('C', new ArrayList<>());
+        coverage.put('D', new ArrayList<>());
+
         entries = new HashMap<>();
         entries.put('A', new Point3D(0, 2.5,0));
         entries.put('B', new Point3D(2.5,0,0));
@@ -26,7 +35,8 @@ public class World {
     }
 
     public boolean isCleaningZoneCovered(char zone) {
-        return coverage.size() == 10;
+        ArrayList<Point3D> zoneCoverage = coverage.get(zone);
+        return zoneCoverage.size() >= 10;
     }
 
     public boolean isAllCleaningZonesCovered(char currentCleaningZone) {

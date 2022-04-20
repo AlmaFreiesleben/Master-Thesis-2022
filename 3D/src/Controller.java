@@ -8,4 +8,3 @@ public class Controller {
         this.world = world;
     }
 }
-

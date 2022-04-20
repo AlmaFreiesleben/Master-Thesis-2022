@@ -24,7 +24,6 @@ public class Chamber {
     }
 
     public void relativeRotateChamber(float angle) {
-        if (angle > 180 || angle < -180) System.out.println("Unaxepted angle: " + angle);
         updateMotorOdometry(angle/2);
         sim.move(joint, motorOdometry);
         updateMotorOdometry(angle/2);
@@ -35,8 +34,8 @@ public class Chamber {
         sim.freeChamberFromFloor(dummy1, dummy2);
     }
 
-    public void fixChamberToFloor(int floor) {
-        sim.fixChamberToFloor(dummy2, floor);
+    public void fixChamberToFloor() {
+        sim.fixChamberToFloor(dummy2);
     }
 
     public char whatCleaningZone() {

@@ -1,15 +1,11 @@
 import javafx.geometry.Point3D;
 
-import java.util.Random;
-
 public class Lappa {
     private final Simulator sim;
     private final World world;
     private final Chamber redChamber;
     private final Chamber greenChamber;
     private boolean isRedFixed;
-    private float accMotorMovement;
-    private float absoluteMotorMovement;
     private final double radius = 0.8;
 
     // The four cleaning zones are hard-coded (A,B,C,D), the robot starts in A.
@@ -21,35 +17,42 @@ public class Lappa {
         this.world = world;
         this.redChamber = sim.getRedChamber();
         this.greenChamber = sim.getGreenChamber();
-        isRedFixed = true;
-        accMotorMovement = 0;
-        absoluteMotorMovement = 0;
+        isRedFixed = false;
     }
 
     public void step(float angle) {
-        int floor = sim.getFloor();
         if (isRedFixed) {
-            redChamber.fixChamberToFloor(floor);
-            randomRobotStep();
+            redChamber.fixChamberToFloor();
+            //if (isValidStep()) redChamber.relativeRotateChamber(angle);
+            redChamber.relativeRotateChamber(angle);
             redChamber.freeChamberFromFloor();
+            isRedFixed = !isRedFixed;
         } else {
-            greenChamber.fixChamberToFloor(floor);
-            randomRobotStep();
+            greenChamber.fixChamberToFloor();
+            //if (isValidStep()) greenChamber.relativeRotateChamber(angle);
+            greenChamber.relativeRotateChamber(angle);
             greenChamber.freeChamberFromFloor();
+            isRedFixed = !isRedFixed;
         }
     }
 
     public char getCurrentCleaningZone() { return currentCleaningZone; }
 
-    private void randomRobotStep() {
-        Chamber fixed = (isRedFixed) ? redChamber : greenChamber;
-        float increment = (float) (Math.toRadians(new Random().nextInt(361)));
-        if (isValidStep()) fixed.relativeRotateChamber(increment);
+    private void robotStep(double angle, boolean isRedMoving) {
+        Chamber toBeMoved = (isRedMoving) ? redChamber : greenChamber;
+        Chamber toBeFixed = getOppositeChamber(toBeMoved);
+
+        if ((isRedFixed && toBeMoved == redChamber) || (!isRedFixed && toBeMoved == greenChamber)) {
+            toBeFixed.relativeRotateChamber((float) angle);
+        } else {
+            toBeFixed.fixChamberToFloor();
+            toBeMoved.freeChamberFromFloor();
+            toBeFixed.relativeRotateChamber((float) angle);
+        }
     }
 
-    private void robotStep(double angle) {
-        Chamber fixed = (isRedFixed) ? redChamber : greenChamber;
-        fixed.relativeRotateChamber((float) angle);
+    private Chamber getOppositeChamber(Chamber c) {
+        return (c == redChamber) ? greenChamber : redChamber;
     }
 
     public void moveToNextCleaningZone() {
@@ -69,24 +72,24 @@ public class Lappa {
         if (currentPositionRedChamber.distance(entryToNextCleaningZone) > currentPositionGreenChamber.distance(entryToNextCleaningZone)) {
             while (redChamber.whatCleaningZone() != currentCleaningZone || greenChamber.whatCleaningZone() != currentCleaningZone) {
                 double angle = currentPositionGreenChamber.angle(entryToNextCleaningZone, currentPositionRedChamber);
-                robotStep(angle);
+                robotStep(angle, true);
 
                 angle = currentPositionRedChamber.angle(entryToNextCleaningZone, currentPositionGreenChamber);
-                robotStep(angle);
+                robotStep(angle, false);
             }
         } else {
             while (greenChamber.whatCleaningZone() != currentCleaningZone || redChamber.whatCleaningZone() != currentCleaningZone) {
                 double angle = currentPositionRedChamber.angle(entryToNextCleaningZone, currentPositionGreenChamber);
-                robotStep(angle);
+                robotStep(angle, false);
 
                 angle = currentPositionGreenChamber.angle(entryToNextCleaningZone, currentPositionRedChamber);
-                robotStep(angle);
+                robotStep(angle, true);
             }
         }
     }
 
-    private boolean isValidStep() {
-        Chamber moving = (!isRedFixed) ? redChamber : greenChamber;
+    private boolean isValidStep() { //TODO prediction of next position of moving chamber
+        Chamber moving = (isRedFixed) ? greenChamber : redChamber;
         char cleaningZoneOfNewPosition = moving.whatCleaningZone();
         return currentCleaningZone == cleaningZoneOfNewPosition;
     }
