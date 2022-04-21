@@ -186,4 +186,6 @@ public class Lappa {
 
         return getPointOnPerimeter(angle, fixedX, fixedY, true);
     }
+
+    public Chamber getGreenChamber() { return greenChamber; }
 }

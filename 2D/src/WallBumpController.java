@@ -10,7 +10,7 @@ public class WallBumpController extends Controller {
     public void wallBumpWalk() {
         boolean isFalling = false;
         while (!world.isCovered()) {
-            float motor = 75;
+            float motor = 95;
             if (isFalling) motor = new Random().nextInt(361) - 180;
 
             if (lappa.getIsRedFixed()) {
