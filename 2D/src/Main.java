@@ -5,8 +5,8 @@ public class Main
         Simulator sim = new Simulator();
         World world = new World(3.5, 3.5, 0.4);
         Lappa lappa = new Lappa(sim, world);
-        ZigZagController c = new ZigZagController(lappa, world);
-        c.zigZagWalk();
+        WallBumpController c = new WallBumpController(lappa, world);
+        c.wallBumpWalk();
         /*c.randomWalkRecordResult();
         c.writeToFiles();
 

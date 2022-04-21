@@ -39,7 +39,7 @@ def plot_labels():
     plt.xlabel("Time in minutes", **mono_font)
     plt.ylabel("Coverage in percent", **mono_font)
     plt.grid()
-    plt.savefig("graph_zigzag_5x10_10_runs.png")
+    plt.savefig("graph_wallbump_5x10_10_runs.png")
     plt.show()
 
 plot_data()
