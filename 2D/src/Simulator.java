@@ -70,7 +70,8 @@ public class Simulator {
         sleep(500);
     }
 
-    public void fixChamberToFloor(int dummy2, int floor) {
+    public void fixChamberToFloor(int dummy2) {
+        int floor = getFloor();
         api.simxSetObjectParent(clientID, dummy2, floor, true, api.simx_opmode_blocking);
         sleep(500);
     }

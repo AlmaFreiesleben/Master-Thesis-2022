@@ -40,11 +40,11 @@ public class Lappa {
         boolean isFalling = false;
         int floor = sim.getFloor();
         if (isRedFixed) {
-            redChamber.fixChamberToFloor(floor);
+            redChamber.fixChamberToFloor();
             isFalling = moveChamber(greenChamber, redChamber, angle, false);
             redChamber.freeChamberFromFloor();
         } else {
-            greenChamber.fixChamberToFloor(floor);
+            greenChamber.fixChamberToFloor();
             isFalling = moveChamber(redChamber, greenChamber, angle, false);
             greenChamber.freeChamberFromFloor();
         }
@@ -54,13 +54,27 @@ public class Lappa {
     public void simpleStep(float angle) {
         int floor = sim.getFloor();
         if (isRedFixed) {
-            redChamber.fixChamberToFloor(floor);
+            redChamber.fixChamberToFloor();
             redChamber.relativeRotateChamber(-angle);
             redChamber.freeChamberFromFloor();
         } else {
-            greenChamber.fixChamberToFloor(floor);
+            greenChamber.fixChamberToFloor();
             greenChamber.relativeRotateChamber(-angle);
             greenChamber.freeChamberFromFloor();
+        }
+    }
+
+    public void stepWithChamberControl(float angle, boolean isRedMovingChamber) {
+        if (!isRedMovingChamber) {
+            redChamber.fixChamberToFloor();
+            redChamber.relativeRotateChamberOneMove(angle);
+            redChamber.freeChamberFromFloor();
+            absoluteMotorMovement += Math.abs(angle);
+        } else {
+            greenChamber.fixChamberToFloor();
+            greenChamber.relativeRotateChamberOneMove(angle);
+            greenChamber.freeChamberFromFloor();
+            absoluteMotorMovement += Math.abs(angle);
         }
     }
 
@@ -188,4 +202,6 @@ public class Lappa {
     }
 
     public Chamber getGreenChamber() { return greenChamber; }
+
+    public Point2D getCurrentFixedPosition() { return currentFixedPosition; }
 }
