@@ -15,7 +15,7 @@ public class SnakeController extends Controller{
         int numSteps = 0;
 
         while (!world.isCovered()) {
-            for (int i = 0; i < (world.getWorldH() * 2 - 1); i++) {
+            for (int i = 0; i < (world.getWorldH() * 2); i++) {
                 lappa.stepWithoutFallingDetection(motor);
                 numSteps++;
                 lappa.stepWithoutFallingDetection(-motor);
