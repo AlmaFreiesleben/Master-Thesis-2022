@@ -5,6 +5,7 @@ public class SnakeController extends Controller{
     public SnakeController(Lappa lappa, World world) {
         super(lappa, world);
         this.startPosX = lappa.getGreenChamber().getXOfChamber();
+        world.createSamplingOfPointsPositiveQuadrant();
     }
 
     public void snakeWalk() {
@@ -13,24 +14,25 @@ public class SnakeController extends Controller{
         float turn = 0;
         int numSteps = 0;
 
-        while (!isCovered()) {
+        while (!world.isCovered()) {
             for (int i = 0; i < (world.getWorldH() * 2 - 1); i++) {
-                lappa.stepWithChamberControl(motor, false);
+                lappa.stepWithoutFallingDetection(motor);
                 numSteps++;
-                lappa.stepWithChamberControl(-motor, true);
+                lappa.stepWithoutFallingDetection(-motor);
                 numSteps++;
             }
-            if (turn % 2 == 0) lappa.stepWithChamberControl(turnMotor, true);
-            else lappa.stepWithChamberControl(-turnMotor, false);
+
+            if (turn % 2 == 0) {
+                lappa.stepWithoutFallingDetection(0);
+                lappa.stepWithoutFallingDetection(turnMotor);
+            } else {
+                lappa.stepWithoutFallingDetection(-turnMotor);
+                lappa.stepWithoutFallingDetection(0);
+            }
             numSteps++;
             turn++;
         }
         System.out.println("World is covered");
-        System.out.println("number of steps: " + numSteps);
+        System.out.println(numSteps);
     }
-
-    private boolean isCovered() {
-        float currPosX = lappa.getGreenChamber().getXOfChamber();
-        return Math.abs(startPosX-currPosX) > world.getWorldW() * 2;
-    }
-}
+ }
