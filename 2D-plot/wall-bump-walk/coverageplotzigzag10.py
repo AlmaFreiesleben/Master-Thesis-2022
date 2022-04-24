@@ -42,6 +42,7 @@ def plot_labels():
     plt.savefig("graph_wallbump_5x10_10_runs.png")
     plt.show()
 
+plt.xlim(right=3500)
 plot_data()
 plot_mean()
 plot_labels()
