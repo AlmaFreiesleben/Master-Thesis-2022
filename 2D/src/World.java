@@ -43,6 +43,7 @@ public class World {
     }
 
     public void updateCoverage(List<Point2D> points) {
+        System.out.println(getCoveragePercentage());
         for (Point2D p : points) {
             updateCoverage(p);
         }

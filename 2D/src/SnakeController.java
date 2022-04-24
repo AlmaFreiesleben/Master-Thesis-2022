@@ -1,9 +1,6 @@
-import java.util.ArrayList;
-
 public class SnakeController extends Controller{
 
     private float startPosX;
-    private boolean isRecordingResults = false;
 
     public SnakeController(Lappa lappa, World world) {
         super(lappa, world);
@@ -17,7 +14,7 @@ public class SnakeController extends Controller{
         int numSteps = 0;
 
         while (!isCovered()) {
-            for (int i = 0; i < 7; i++) {
+            for (int i = 0; i < (world.getWorldH() * 2 - 1); i++) {
                 lappa.stepWithChamberControl(motor, false);
                 numSteps++;
                 lappa.stepWithChamberControl(-motor, true);
@@ -33,10 +30,7 @@ public class SnakeController extends Controller{
     }
 
     private boolean isCovered() {
-        System.out.println("start: " + startPosX);
         float currPosX = lappa.getGreenChamber().getXOfChamber();
-        if (isRecordingResults) currPosX = (float) lappa.getCurrentFixedPosition().getX();
-        System.out.println("curr: " + currPosX);
         return Math.abs(startPosX-currPosX) > world.getWorldW() * 2;
     }
 }

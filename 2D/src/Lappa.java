@@ -16,12 +16,12 @@ public class Lappa {
     private final double radius = 0.8;
     private final double arenaH;
     private final double arenaW;
+    private Point2D currentFixedPosition;
 
     // TODO TEST VARIABLES REMOVE!!!
     double test_x = 0;
     double test_y = 0;
     int cnt = 1;
-    private Point2D currentFixedPosition;
 
     public Lappa(Simulator sim, World world) {
         this.sim = sim;
@@ -38,7 +38,6 @@ public class Lappa {
 
     public boolean step(float angle) {
         boolean isFalling = false;
-        int floor = sim.getFloor();
         if (isRedFixed) {
             redChamber.fixChamberToFloor();
             isFalling = moveChamber(greenChamber, redChamber, angle, false);
@@ -52,34 +51,29 @@ public class Lappa {
     }
 
     public void simpleStep(float angle) {
-        int floor = sim.getFloor();
-        if (isRedFixed) {
-            redChamber.fixChamberToFloor();
-            redChamber.relativeRotateChamber(-angle);
-            redChamber.freeChamberFromFloor();
-        } else {
-            greenChamber.fixChamberToFloor();
-            greenChamber.relativeRotateChamber(-angle);
-            greenChamber.freeChamberFromFloor();
-        }
+        Chamber nonMoving = (isRedFixed) ? redChamber : greenChamber;
+
+        nonMoving.fixChamberToFloor();
+        nonMoving.relativeRotateChamber(-angle);
+        nonMoving.freeChamberFromFloor();
     }
 
     public void stepWithChamberControl(float angle, boolean isRedMovingChamber) {
-        if (!isRedMovingChamber) {
-            redChamber.fixChamberToFloor();
-            redChamber.relativeRotateChamberOneMove(angle);
-            redChamber.freeChamberFromFloor();
-            absoluteMotorMovement += Math.abs(angle);
-        } else {
-            greenChamber.fixChamberToFloor();
-            greenChamber.relativeRotateChamberOneMove(angle);
-            greenChamber.freeChamberFromFloor();
-            absoluteMotorMovement += Math.abs(angle);
-        }
+        Chamber nonMoving = (isRedMovingChamber) ? greenChamber : redChamber;
+
+        Point2D nextPoint = getTargetPoint(nonMoving, angle, false);
+        nonMoving.fixChamberToFloor();
+        nonMoving.relativeRotateChamberOneMove(angle);
+        nonMoving.freeChamberFromFloor();
+        isRedFixed = (isRedMovingChamber) ? false : true;
+        accMotorMovement += angle;
+        absoluteMotorMovement += Math.abs(angle);
+        currentFixedPosition = nextPoint;
     }
 
     public boolean stepWithoutSim(float angle) {
         boolean isFalling = false;
+
         if (isRedFixed) {
             isFalling = moveChamber(greenChamber, redChamber, angle, true);
         } else {
