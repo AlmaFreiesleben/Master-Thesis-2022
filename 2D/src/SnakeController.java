@@ -38,7 +38,7 @@ public class SnakeController extends Controller{
         float turn = 0;
         int numSteps = 0;
 
-        while (!world.isCovered()) {
+        while (world.getCoveragePercentage() < 97) {
 
             double percent = world.getCoveragePercentage();
             float absAngle = lappa.getAbsoluteMotorMovement();
@@ -47,18 +47,18 @@ public class SnakeController extends Controller{
             time.add(Float.toString(t));
 
             for (int i = 0; i < (world.getWorldH() * 2); i++) {
-                lappa.stepWithoutFallingDetection(motor);
+                lappa.stepWithoutSimWithoutFallingDetection(motor);
                 numSteps++;
-                lappa.stepWithoutFallingDetection(-motor);
+                lappa.stepWithoutSimWithoutFallingDetection(-motor);
                 numSteps++;
             }
 
             if (turn % 2 == 0) {
-                lappa.stepWithoutFallingDetection(0);
-                lappa.stepWithoutFallingDetection(turnMotor);
+                lappa.stepWithoutSimWithoutFallingDetection(0);
+                lappa.stepWithoutSimWithoutFallingDetection(turnMotor);
             } else {
-                lappa.stepWithoutFallingDetection(-turnMotor);
-                lappa.stepWithoutFallingDetection(0);
+                lappa.stepWithoutSimWithoutFallingDetection(-turnMotor);
+                lappa.stepWithoutSimWithoutFallingDetection(0);
             }
             numSteps++;
             turn++;

@@ -81,6 +81,14 @@ public class Lappa {
         return isFalling;
     }
 
+    public void stepWithoutSimWithoutFallingDetection(float angle) {
+        if (isRedFixed) {
+            moveChamberWithoutFallingDetection(redChamber, angle, true);
+        } else {
+            moveChamberWithoutFallingDetection(greenChamber, angle, true);
+        }
+    }
+
     public void moveChamberWithoutFallingDetection(Chamber fixed, float angle, boolean isRecordingResults) {
         Point2D nextPoint = getTargetPoint(fixed, angle, isRecordingResults);
 
