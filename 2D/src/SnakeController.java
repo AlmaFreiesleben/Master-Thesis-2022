@@ -1,10 +1,9 @@
-public class SnakeController extends Controller{
+import java.util.ArrayList;
 
-    private float startPosX;
+public class SnakeController extends Controller{
 
     public SnakeController(Lappa lappa, World world) {
         super(lappa, world);
-        this.startPosX = lappa.getGreenChamber().getXOfChamber();
         world.createSamplingOfPointsPositiveQuadrant();
     }
 
@@ -12,9 +11,41 @@ public class SnakeController extends Controller{
         float motor = 75;
         float turnMotor = 180;
         float turn = 0;
+
+        while (!world.isCovered()) {
+            for (int i = 0; i < (world.getWorldH() * 2); i++) {
+                lappa.stepWithoutFallingDetection(motor);
+                lappa.stepWithoutFallingDetection(-motor);
+            }
+
+            if (turn % 2 == 0) {
+                lappa.stepWithoutFallingDetection(0);
+                lappa.stepWithoutFallingDetection(turnMotor);
+            } else {
+                lappa.stepWithoutFallingDetection(-turnMotor);
+                lappa.stepWithoutFallingDetection(0);
+            }
+            turn++;
+        }
+        System.out.println("World is covered");
+    }
+
+    public void snakeWalkRecordResults() {
+        ArrayList<String> coveragePercentage = new ArrayList<>();
+        ArrayList<String> time = new ArrayList<>();
+        float motor = 75;
+        float turnMotor = 180;
+        float turn = 0;
         int numSteps = 0;
 
         while (!world.isCovered()) {
+
+            double percent = world.getCoveragePercentage();
+            float absAngle = lappa.getAbsoluteMotorMovement();
+            float t = convertAbsAngleToTimeInMinutes(absAngle, numSteps);
+            coveragePercentage.add(Double.toString(percent));
+            time.add(Float.toString(t));
+
             for (int i = 0; i < (world.getWorldH() * 2); i++) {
                 lappa.stepWithoutFallingDetection(motor);
                 numSteps++;
@@ -33,6 +64,7 @@ public class SnakeController extends Controller{
             turn++;
         }
         System.out.println("World is covered");
-        System.out.println(numSteps);
+        coverageResults.add(convertListToArray(coveragePercentage));
+        timeResults.add(convertListToArray(time));
     }
- }
+}

@@ -18,13 +18,13 @@ with open('time.csv') as csvfile:
 x = []
 y = []
 def compute_mean():
-    for i in range(150):
+    for i in range(100):
         mean_time = (time_data[0][i] + time_data[1][i] + time_data[2][i] + time_data[3][i] + time_data[4][i] + time_data[5][i] + time_data[6][i] + time_data[7][i] + time_data[8][i] + time_data[9][i]) / 10
         x.append(mean_time)
         mean_cov = (cov_data[0][i] + cov_data[1][i] + cov_data[2][i] + cov_data[3][i] + cov_data[4][i] + cov_data[5][i] + cov_data[6][i] + cov_data[7][i] + cov_data[8][i] + cov_data[9][i]) / 10
         y.append(mean_cov)
-    x.append(time_data[5][len(time_data[5])-1])
-    y.append(cov_data[5][len(cov_data[5])-1])
+    x.append(time_data[2][len(time_data[2])-1])
+    y.append(cov_data[2][len(cov_data[2])-1])
 
 def plot_data():
     for i in range(10):
@@ -42,7 +42,7 @@ def plot_labels():
     plt.savefig("graph_wallbump_5x10_10_runs.png")
     plt.show()
 
-plt.xlim(right=3500)
+plt.xlim(right=3200)
 plot_data()
 plot_mean()
 plot_labels()

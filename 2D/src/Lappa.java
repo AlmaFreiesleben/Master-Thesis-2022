@@ -81,14 +81,6 @@ public class Lappa {
         return isFalling;
     }
 
-    public boolean getIsRedFixed() {
-        return isRedFixed;
-    }
-
-    public float getAbsoluteMotorMovement() { return absoluteMotorMovement; }
-
-    public void preloadAbsoluteMotorMovement() { absoluteMotorMovement = 0; }
-
     public void moveChamberWithoutFallingDetection(Chamber fixed, float angle, boolean isRecordingResults) {
         Point2D nextPoint = getTargetPoint(fixed, angle, isRecordingResults);
 
@@ -209,4 +201,12 @@ public class Lappa {
     public Chamber getGreenChamber() { return greenChamber; }
 
     public Point2D getCurrentFixedPosition() { return currentFixedPosition; }
+
+    public boolean getIsRedFixed() {
+        return isRedFixed;
+    }
+
+    public float getAbsoluteMotorMovement() { return absoluteMotorMovement; }
+
+    public void preloadAbsoluteMotorMovement() { absoluteMotorMovement = 0; }
 }
