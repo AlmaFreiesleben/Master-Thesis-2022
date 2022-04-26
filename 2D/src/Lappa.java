@@ -16,12 +16,12 @@ public class Lappa {
     private final double radius = 0.8;
     private final double arenaH;
     private final double arenaW;
+    private Point2D currentFixedPosition;
 
     // TODO TEST VARIABLES REMOVE!!!
     double test_x = 0;
     double test_y = 0;
     int cnt = 1;
-    private Point2D currentFixedPosition;
 
     public Lappa(Simulator sim, World world) {
         this.sim = sim;
@@ -38,34 +38,41 @@ public class Lappa {
 
     public boolean step(float angle) {
         boolean isFalling = false;
-        int floor = sim.getFloor();
         if (isRedFixed) {
-            redChamber.fixChamberToFloor(floor);
+            redChamber.fixChamberToFloor();
             isFalling = moveChamber(greenChamber, redChamber, angle, false);
             redChamber.freeChamberFromFloor();
         } else {
-            greenChamber.fixChamberToFloor(floor);
+            greenChamber.fixChamberToFloor();
             isFalling = moveChamber(redChamber, greenChamber, angle, false);
             greenChamber.freeChamberFromFloor();
         }
         return isFalling;
     }
 
-    public void simpleStep(float angle) {
-        int floor = sim.getFloor();
+    public void stepWithoutFallingDetection(float angle) {
         if (isRedFixed) {
-            redChamber.fixChamberToFloor(floor);
-            redChamber.relativeRotateChamber(-angle);
+            redChamber.fixChamberToFloor();
+            moveChamberWithoutFallingDetection(redChamber, angle, false);
             redChamber.freeChamberFromFloor();
         } else {
-            greenChamber.fixChamberToFloor(floor);
-            greenChamber.relativeRotateChamber(-angle);
+            greenChamber.fixChamberToFloor();
+            moveChamberWithoutFallingDetection(greenChamber, angle, false);
             greenChamber.freeChamberFromFloor();
         }
     }
 
+    public void simpleStep(float angle) {
+        Chamber nonMoving = (isRedFixed) ? redChamber : greenChamber;
+
+        nonMoving.fixChamberToFloor();
+        nonMoving.relativeRotateChamber(-angle);
+        nonMoving.freeChamberFromFloor();
+    }
+
     public boolean stepWithoutSim(float angle) {
         boolean isFalling = false;
+
         if (isRedFixed) {
             isFalling = moveChamber(greenChamber, redChamber, angle, true);
         } else {
@@ -74,25 +81,37 @@ public class Lappa {
         return isFalling;
     }
 
-    public boolean getIsRedFixed() {
-        return isRedFixed;
+    public void stepWithoutSimWithoutFallingDetection(float angle) {
+        if (isRedFixed) {
+            moveChamberWithoutFallingDetection(redChamber, angle, true);
+        } else {
+            moveChamberWithoutFallingDetection(greenChamber, angle, true);
+        }
     }
 
-    public float getAbsoluteMotorMovement() { return absoluteMotorMovement; }
+    public void moveChamberWithoutFallingDetection(Chamber fixed, float angle, boolean isRecordingResults) {
+        Point2D nextPoint = getTargetPoint(fixed, angle, isRecordingResults);
 
-    public void preloadAbsoluteMotorMovement() { absoluteMotorMovement = 0; }
+        if (!isRecordingResults) fixed.relativeRotateChamberOneMove(angle);
+        List<Point2D> coveredPoints = getSampleOfCoveredPointsOnArc(fixed, angle, isRecordingResults);
+        world.updateCoverage(coveredPoints);
+        isRedFixed = !isRedFixed;
+        accMotorMovement += angle;
+        absoluteMotorMovement += Math.abs(angle);
+        currentFixedPosition = nextPoint;
+    }
 
     private boolean moveChamber(Chamber moving, Chamber fixed, float angle, boolean isRecordingResults) {
         Point2D nextPoint = getTargetPoint(fixed, angle, isRecordingResults);
         boolean isFalling = isFallingOfArena(nextPoint);
 
         if (!isFalling) {
-            if (!isRecordingResults) fixed.relativeRotateChamber(angle);
+            if (!isRecordingResults) fixed.relativeRotateChamberOneMove(angle);
+            List<Point2D> coveredPoints = getSampleOfCoveredPointsOnArc(fixed, angle, isRecordingResults);
+            world.updateCoverage(coveredPoints);
             isRedFixed = !isRedFixed;
             accMotorMovement += angle;
             absoluteMotorMovement += Math.abs(angle);
-            List<Point2D> coveredPoints = getSampleOfCoveredPointsOnArc(fixed, angle, isRecordingResults);
-            world.updateCoverage(coveredPoints);
 
             // TODO remove test print
             if (!isRecordingResults) {
@@ -167,7 +186,7 @@ public class Lappa {
         double fixedX = fixedCenter.getX();
         double fixedY = fixedCenter.getY();
 
-        int stepOnArc = 10;
+        int stepOnArc = 5;
         int numPointsOnArc = Math.abs(Math.round(angle/stepOnArc));
         float angleFraction = angle;
         for (int i = 0; i < numPointsOnArc; i++) {
@@ -186,4 +205,16 @@ public class Lappa {
 
         return getPointOnPerimeter(angle, fixedX, fixedY, true);
     }
+
+    public Chamber getGreenChamber() { return greenChamber; }
+
+    public Point2D getCurrentFixedPosition() { return currentFixedPosition; }
+
+    public boolean getIsRedFixed() {
+        return isRedFixed;
+    }
+
+    public float getAbsoluteMotorMovement() { return absoluteMotorMovement; }
+
+    public void preloadAbsoluteMotorMovement() { absoluteMotorMovement = 0; }
 }

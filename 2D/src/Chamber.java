@@ -30,6 +30,15 @@ public class Chamber {
         sim.move(joint, motorOdometry);
     }
 
+    public void relativeRotateChamberOneMove(float angle) {
+        if (Math.abs(angle) == 180f) {
+            relativeRotateChamber(angle);
+        } else {
+            updateMotorOdometry(angle);
+            sim.move(joint, motorOdometry);
+        }
+    }
+
     public float getXOfChamber() {
         FloatWA pos = sim.getPositionOfHandle(joint);
         return pos.getArray()[0];
@@ -39,7 +48,7 @@ public class Chamber {
         sim.freeChamberFromFloor(dummy1, dummy2);
     }
 
-    public void fixChamberToFloor(int floor) {
-        sim.fixChamberToFloor(dummy2, floor);
+    public void fixChamberToFloor() {
+        sim.fixChamberToFloor(dummy2);
     }
 }
