@@ -43,6 +43,7 @@ public class World {
     }
 
     public void updateCoverage(List<Point2D> points) {
+        System.out.println(getCoveragePercentage());
         for (Point2D p : points) {
             updateCoverage(p);
         }
@@ -58,7 +59,7 @@ public class World {
                 currentNearestPoint = notCoveredPoint;
             }
         }
-        if (currentShortestDistance < chamberDiameter/4) unCoveredPoints.remove(currentNearestPoint);
+        if (currentShortestDistance < chamberDiameter/2.1) unCoveredPoints.remove(currentNearestPoint);
     }
 
     public void preloadWorld() {
@@ -105,5 +106,42 @@ public class World {
             x += 0.4;
         }
         unCoveredPoints.addAll(pointsToCover);
+    }
+
+    public void createSamplingOfPointsPositiveQuadrant() {
+        unCoveredPoints.clear();
+        pointsToCover.clear();
+
+        int width = (int) Math.floor(W/chamberDiameter);
+        int equalWidth = (width % 2 == 0) ? width : width + 1;
+        int height = (int) Math.floor(H/chamberDiameter);
+        int equalHeight = (height % 2 == 0) ? height : height + 1;
+
+        double x = 0;
+        for (int i = 0; i < equalWidth; i++) {
+            double y = 0;
+            for (int j = 0; j < equalHeight*2; j++) {
+                double loc_x = 0;
+                if (j % 2 == 0) loc_x = x;
+                else loc_x = x + 0.2;
+
+                loc_x = normalizeTo1Decimal(loc_x);
+                y = normalizeTo1Decimal(y);
+
+                if (loc_x == 0 && y == 0) {
+                    pointsToCover.add(new Point2D(loc_x, y));
+                } else if (y == 0) {
+                    pointsToCover.add(new Point2D(loc_x, y));    // 1. quadrant
+                } else if (loc_x == 0) {
+                    pointsToCover.add(new Point2D(loc_x, y));    // 1. quadrant
+                } else {
+                    pointsToCover.add(new Point2D(loc_x, y));    // 1. quadrant
+                }
+                y += 0.2;
+            }
+            x += 0.4;
+        }
+        unCoveredPoints.addAll(pointsToCover);
+        size = unCoveredPoints.size();
     }
 }

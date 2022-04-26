@@ -1,16 +1,16 @@
 import java.util.ArrayList;
 import java.util.Random;
 
-public class ZigZagController extends Controller {
+public class WallBumpController extends Controller {
 
-    public ZigZagController(Lappa lappa, World world) {
+    public WallBumpController(Lappa lappa, World world) {
         super(lappa, world);
     }
 
-    public void zigZagWalk() {
+    public void wallBumpWalk() {
         boolean isFalling = false;
         while (!world.isCovered()) {
-            float motor = 75;
+            float motor = 95;
             if (isFalling) motor = new Random().nextInt(361) - 180;
 
             if (lappa.getIsRedFixed()) {
@@ -21,7 +21,7 @@ public class ZigZagController extends Controller {
         }
     }
 
-    public void zigZagRecordResult() {
+    public void wallBumpRecordResult() {
         ArrayList<String> coveragePercentage = new ArrayList<>();
         ArrayList<String> time = new ArrayList<>();
         int numSteps = 0;
