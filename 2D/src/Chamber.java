@@ -1,5 +1,4 @@
 import coppelia.FloatWA;
-import coppelia.remoteApi;
 
 public class Chamber {
     private final int joint;
