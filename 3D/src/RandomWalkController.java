@@ -15,20 +15,11 @@ public class RandomWalkController extends Controller {
         }
     }
 
-    public void test() {
-        float motor = 30;
-        lappa.step(motor);
-        lappa.step(motor);
-        lappa.step(motor);
-        lappa.step(motor);
-        lappa.step(motor);
-        lappa.step(motor);
-    }
-
     private boolean randomWalk() {
         while (!world.isCleaningZoneCovered(lappa.getCurrentCleaningZone())) {
             float motor = new Random().nextInt(361) - 180;
             lappa.step(motor);
+            motor = new Random().nextInt(361) - 180;
             lappa.step(motor);
         }
         return true;

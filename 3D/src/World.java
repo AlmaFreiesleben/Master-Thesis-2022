@@ -34,9 +34,13 @@ public class World {
         return entries.get(cleaningZone);
     }
 
-    public boolean isCleaningZoneCovered(char zone) {
+    public boolean isCleaningZoneCovered(char zone) { // TODO cover sphere with hexagons
         ArrayList<Point3D> zoneCoverage = coverage.get(zone);
         return zoneCoverage.size() >= 10;
+    }
+
+    public void updateCoverage(char currentCleaningZone, Point3D p) {
+        coverage.get(currentCleaningZone).add(p);
     }
 
     public boolean isAllCleaningZonesCovered(char currentCleaningZone) {

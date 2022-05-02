@@ -52,7 +52,7 @@ public class Simulator {
 
     public void move(int joint, float angle) {
         api.simxSetJointTargetPosition(clientID, joint, (float) Math.toRadians(-angle), api.simx_opmode_blocking);
-        sleep(500);
+        sleep(3000);
     }
 
     public FloatWA getPositionOfHandle(int handle) {

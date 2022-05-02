@@ -17,23 +17,28 @@ public class Lappa {
         this.world = world;
         this.redChamber = sim.getRedChamber();
         this.greenChamber = sim.getGreenChamber();
-        isRedFixed = false;
+        isRedFixed = true;
     }
 
     public void step(float angle) {
         if (isRedFixed) {
-            redChamber.fixChamberToFloor();
-            //if (isValidStep()) redChamber.relativeRotateChamber(angle);
-            redChamber.relativeRotateChamber(angle);
-            redChamber.freeChamberFromFloor();
-            isRedFixed = !isRedFixed;
+            stepChamber(redChamber, angle);
         } else {
-            greenChamber.fixChamberToFloor();
-            //if (isValidStep()) greenChamber.relativeRotateChamber(angle);
-            greenChamber.relativeRotateChamber(angle);
-            greenChamber.freeChamberFromFloor();
+            stepChamber(greenChamber, angle);
+        }
+    }
+
+    public void stepChamber(Chamber c, float angle) {
+        c.fixChamberToFloor();
+        c.relativeRotateChamber(angle);
+        if (!isValidStep()) {
+            c.relativeRotateChamber(-angle);
             isRedFixed = !isRedFixed;
         }
+        c.freeChamberFromFloor();
+        c.setCurrentPosition();
+        world.updateCoverage(c.whatCleaningZone(), c.getCurrentPosition());
+        isRedFixed = !isRedFixed;
     }
 
     public char getCurrentCleaningZone() { return currentCleaningZone; }

@@ -19,15 +19,23 @@ public class Chamber {
 
     public Point3D getCurrentPosition() { return currentPosition; }
 
+    public void setCurrentPosition() { currentPosition = sim.getPositionOfObject(dummy1); }
+
     public void updateMotorOdometry(float angle) {
         motorOdometry += angle;
     }
 
     public void relativeRotateChamber(float angle) {
-        updateMotorOdometry(angle/2);
-        sim.move(joint, motorOdometry);
-        updateMotorOdometry(angle/2);
-        sim.move(joint, motorOdometry);
+        if (angle > 180 || angle < -180) System.out.println("Unaxepted angle: " + angle);
+        if (Math.abs(angle) == 180f) {
+            updateMotorOdometry(angle/2);
+            sim.move(joint, motorOdometry);
+            updateMotorOdometry(angle/2);
+            sim.move(joint, motorOdometry);
+        } else {
+            updateMotorOdometry(angle);
+            sim.move(joint, motorOdometry);
+        }
     }
 
     public void freeChamberFromFloor() {
@@ -44,10 +52,10 @@ public class Chamber {
         double y = pos.getY();
         double z = pos.getZ();
 
-        if (z > 0) return '-';
+        if (z < 0) return '-';
 
-        if       (x >= 0 && y > 0 || x == 0 && y == 0)  return 'A';
-        else if  (x > 0 && y <= 0)                      return 'B';
+        if       (x >= 0 && y >= 0)                     return 'A';
+        else if  (x > 0 && y < 0)                       return 'B';
         else if  (x <= 0 && y < 0)                      return 'C';
         else if  (x < 0 && y >= 0)                      return 'D';
         else                                            return '-';
