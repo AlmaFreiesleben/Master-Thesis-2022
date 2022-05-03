@@ -4,7 +4,7 @@ import math
 xs = []
 ys = []
 zs = []
-samples = 10
+samples = 1000
 phi = math.pi * (3. - math.sqrt(5.))  # golden angle in radians
 
 for i in range(samples):

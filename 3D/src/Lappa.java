@@ -29,16 +29,22 @@ public class Lappa {
         if (!isValid()) {
             c.relativeRotateChamber(-angle);
             isRedFixed = !isRedFixed;
+        } else {
+            Point3D newPos = getPositionOfMovingChamber();
+            world.updateCoverage(newPos);
         }
         c.freeChamberFromFloor();
-        //world.updateCoverage(c.whatCleaningZone(), c.getCurrentPosition());
         isRedFixed = !isRedFixed;
     }
 
-    private boolean isValid() {
+    private Point3D getPositionOfMovingChamber() {
         Chamber moving = (isRedFixed) ? greenChamber : redChamber;
-        Point3D p = moving.getCurrentPosition();
-        return p.getZ() >= 0;
+        return moving.getCurrentPosition();
+    }
+
+    private boolean isValid() {
+        Point3D p = getPositionOfMovingChamber();
+        return p.getZ() > 1;
     }
 }
 
