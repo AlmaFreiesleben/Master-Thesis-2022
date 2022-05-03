@@ -6,7 +6,6 @@ public class Chamber {
     private final int dummy2;
     private final Simulator sim;
     private float motorOdometry;
-    private Point3D currentPosition;
 
     public Chamber(int joint, int dummy1, int dummy2, Simulator sim) {
         this.joint = joint;
@@ -14,12 +13,9 @@ public class Chamber {
         this.dummy2 = dummy2;
         this.sim = sim;
         motorOdometry = 0;
-        currentPosition = getCurrentPosition();
     }
 
     public Point3D getCurrentPosition() { return sim.getPositionOfObject(dummy1); }
-
-    public void setCurrentPosition() { currentPosition = getCurrentPosition(); }
 
     public void updateMotorOdometry(float angle) {
         motorOdometry += angle;
@@ -44,20 +40,5 @@ public class Chamber {
 
     public void fixChamberToFloor() {
         sim.fixChamberToFloor(dummy2);
-    }
-
-    public char whatCleaningZone() {
-        Point3D pos = sim.getPositionOfObject(dummy1);
-        double x = pos.getX();
-        double y = pos.getY();
-        double z = pos.getZ();
-
-        if (z < 0) return '-';
-
-        if       (x >= 0 && y >= 0)                     return 'A';
-        else if  (x > 0 && y < 0)                       return 'B';
-        else if  (x <= 0 && y < 0)                      return 'C';
-        else if  (x < 0 && y >= 0)                      return 'D';
-        else                                            return '-';
     }
 }
