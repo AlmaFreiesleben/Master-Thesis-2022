@@ -36,7 +36,6 @@ public class Lappa {
             isRedFixed = !isRedFixed;
         }
         c.freeChamberFromFloor();
-        //c.setCurrentPosition();
         //world.updateCoverage(c.whatCleaningZone(), c.getCurrentPosition());
         isRedFixed = !isRedFixed;
     }

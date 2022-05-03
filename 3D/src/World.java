@@ -1,19 +1,47 @@
 import javafx.geometry.Point3D;
-import javafx.scene.shape.Sphere;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class World {
 
-    //private Sphere sphere;
     private double chamberSize;
+    private ArrayList<Point3D> pointsToCover;
+    private ArrayList<Point3D> unCoveredPoints;
     private HashMap<Character, Point3D> entries;
     private HashMap<Character, ArrayList<Point3D>> coverage;
 
     public World(double radius, double chamberSize) {
-        //this.sphere = new Sphere(radius);
         this.chamberSize = chamberSize;
-        initEntriesAndCoverage();
+        samplePointsToCover(radius);
+        System.out.println(unCoveredPoints.size());
+    }
+
+    private void samplePointsToCover(double radius) {
+        pointsToCover = new ArrayList<>();
+        unCoveredPoints = new ArrayList<>();
+
+        double x, y, z;
+        int samples = 200;
+        double phi = Math.PI * (3. - Math.sqrt(5.));
+
+        for (int i = 0; i < samples ; i++) {
+            y = 1 - (i / (float) (samples - 1)) * 2;
+            double r = Math.sqrt(1 - y * y);
+
+            double theta = phi * i;
+
+            x = Math.cos(theta) * r;
+            z = Math.sin(theta) * r;
+
+            x *= radius;
+            y *= radius;
+            z *= radius;
+
+            if (z >= 0) {
+                pointsToCover.add(new Point3D(x, y, z));
+                unCoveredPoints.add(new Point3D(x, y, z));
+            }
+        }
     }
 
     private void initEntriesAndCoverage() {
