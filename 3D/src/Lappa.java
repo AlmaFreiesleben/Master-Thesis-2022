@@ -1,5 +1,7 @@
 import javafx.geometry.Point3D;
 
+import java.util.ArrayList;
+
 public class Lappa {
     private final Simulator sim;
     private final World world;
@@ -30,8 +32,8 @@ public class Lappa {
             c.relativeRotateChamber(-angle);
             isRedFixed = !isRedFixed;
         } else {
-            Point3D newPos = getPositionOfMovingChamber();
-            world.updateCoverage(newPos);
+            ArrayList<Point3D> points = c.getPointsOnArc();
+            world.updateCoverage(points);
         }
         c.freeChamberFromFloor();
         isRedFixed = !isRedFixed;

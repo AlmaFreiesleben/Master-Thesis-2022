@@ -16,7 +16,13 @@ public class World {
         return unCoveredPoints.isEmpty();
     }
 
-    public void updateCoverage(Point3D p) {
+    public void updateCoverage(ArrayList<Point3D> points) {
+        for (Point3D p : points) {
+            updateCoverage(p);
+        }
+    }
+
+    private void updateCoverage(Point3D p) {
         double currentShortestDistance = Integer.MAX_VALUE;
         Point3D currentNearestPoint = p;
         for (Point3D notCoveredPoint : unCoveredPoints) {
@@ -56,7 +62,7 @@ public class World {
             y *= radius;
             z *= radius;
 
-            if (z >= 0) {
+            if (z >= 1) {
                 pointsToCover.add(new Point3D(x, y, z));
                 unCoveredPoints.add(new Point3D(x, y, z));
             }
