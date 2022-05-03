@@ -3,12 +3,10 @@
   <component name="ChangeListManager">
     <list default="true" id="21806315-d33e-4a37-b9ed-c05e26165e89" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Chamber.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Chamber.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Lappa.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Lappa.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Main.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/RandomWalkController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/RandomWalkController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Simulator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Simulator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/World.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/World.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -150,7 +148,7 @@
       <workItem from="1648797291779" duration="1881000" />
       <workItem from="1650376689874" duration="14603000" />
       <workItem from="1651387354469" duration="137000" />
-      <workItem from="1651488327508" duration="7608000" />
+      <workItem from="1651488327508" duration="10690000" />
     </task>
     <servers />
   </component>
@@ -172,14 +170,10 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
+          <condition expression="isValid() == false" language="JAVA" />
           <url>file://$PROJECT_DIR$/src/Lappa.java</url>
-          <line>72</line>
-          <option name="timeStamp" value="6" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/RandomWalkController.java</url>
-          <line>9</line>
-          <option name="timeStamp" value="7" />
+          <line>33</line>
+          <option name="timeStamp" value="12" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

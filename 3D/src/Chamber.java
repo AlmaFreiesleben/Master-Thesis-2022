@@ -14,12 +14,12 @@ public class Chamber {
         this.dummy2 = dummy2;
         this.sim = sim;
         motorOdometry = 0;
-        currentPosition = sim.getPositionOfObject(dummy1);
+        currentPosition = getCurrentPosition();
     }
 
-    public Point3D getCurrentPosition() { return currentPosition; }
+    public Point3D getCurrentPosition() { return sim.getPositionOfObject(dummy1); }
 
-    public void setCurrentPosition() { currentPosition = sim.getPositionOfObject(dummy1); }
+    public void setCurrentPosition() { currentPosition = getCurrentPosition(); }
 
     public void updateMotorOdometry(float angle) {
         motorOdometry += angle;

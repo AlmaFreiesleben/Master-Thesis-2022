@@ -15,13 +15,14 @@ public class RandomWalkController extends Controller {
         }
     }
 
-    private boolean randomWalk() {
-        while (!world.isCleaningZoneCovered(lappa.getCurrentCleaningZone())) {
+    public boolean randomWalk() {
+        //while (!world.isCleaningZoneCovered(lappa.getCurrentCleaningZone())) {
+        while (true) {
             float motor = new Random().nextInt(361) - 180;
             lappa.step(motor);
             motor = new Random().nextInt(361) - 180;
             lappa.step(motor);
         }
-        return true;
+        //return true;
     }
 }

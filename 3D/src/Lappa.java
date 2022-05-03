@@ -31,13 +31,13 @@ public class Lappa {
     public void stepChamber(Chamber c, float angle) {
         c.fixChamberToFloor();
         c.relativeRotateChamber(angle);
-        if (!isValidStep()) {
+        if (!isValid()) {
             c.relativeRotateChamber(-angle);
             isRedFixed = !isRedFixed;
         }
         c.freeChamberFromFloor();
-        c.setCurrentPosition();
-        world.updateCoverage(c.whatCleaningZone(), c.getCurrentPosition());
+        //c.setCurrentPosition();
+        //world.updateCoverage(c.whatCleaningZone(), c.getCurrentPosition());
         isRedFixed = !isRedFixed;
     }
 
@@ -93,7 +93,13 @@ public class Lappa {
         }
     }
 
-    private boolean isValidStep() { //TODO prediction of next position of moving chamber
+    private boolean isValid() {
+        Chamber moving = (isRedFixed) ? greenChamber : redChamber;
+        Point3D p = moving.getCurrentPosition();
+        return p.getZ() >= 0;
+    }
+
+    private boolean isValidStep() {
         Chamber moving = (isRedFixed) ? greenChamber : redChamber;
         char cleaningZoneOfNewPosition = moving.whatCleaningZone();
         return currentCleaningZone == cleaningZoneOfNewPosition;
