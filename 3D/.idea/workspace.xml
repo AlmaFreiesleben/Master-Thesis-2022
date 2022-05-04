@@ -4,9 +4,9 @@
     <list default="true" id="21806315-d33e-4a37-b9ed-c05e26165e89" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Chamber.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Chamber.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Controller.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Controller.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Lappa.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Lappa.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Simulator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Simulator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/World.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/World.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RandomWalkController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/RandomWalkController.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -148,7 +148,7 @@
       <workItem from="1648797291779" duration="1881000" />
       <workItem from="1650376689874" duration="14603000" />
       <workItem from="1651387354469" duration="137000" />
-      <workItem from="1651488327508" duration="19816000" />
+      <workItem from="1651488327508" duration="22818000" />
     </task>
     <servers />
   </component>

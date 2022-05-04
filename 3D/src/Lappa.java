@@ -39,6 +39,10 @@ public class Lappa {
         isRedFixed = !isRedFixed;
     }
 
+    public float getAbsoluteMotorMovement() {
+        return redChamber.getAbsMotorOdometry() + greenChamber.getAbsMotorOdometry();
+    }
+
     private Point3D getPositionOfMovingChamber() {
         Chamber moving = (isRedFixed) ? greenChamber : redChamber;
         return moving.getCurrentPosition();

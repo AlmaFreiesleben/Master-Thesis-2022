@@ -9,6 +9,7 @@ public class Chamber {
     private final Simulator sim;
     private float motorOdometry;
     private ArrayList<Point3D> pointsOnArc;
+    private float absMotorOdometry;
 
     public Chamber(int joint, int dummy1, int dummy2, Simulator sim) {
         this.joint = joint;
@@ -17,12 +18,14 @@ public class Chamber {
         this.sim = sim;
         motorOdometry = 0;
         pointsOnArc = new ArrayList<>();
+        absMotorOdometry = 0;
     }
 
     public Point3D getCurrentPosition() { return sim.getPositionOfObject(dummy1); }
 
     public void updateMotorOdometry(float angle) {
         motorOdometry += angle;
+        absMotorOdometry += Math.abs(angle);
     }
 
     public ArrayList<Point3D> getPointsOnArc() { return pointsOnArc; }
@@ -31,15 +34,6 @@ public class Chamber {
         pointsOnArc.clear();
 
         if (angle > 180 || angle < -180) System.out.println("Unaxepted angle: " + angle);
-        /*if (Math.abs(angle) == 180f) {
-            updateMotorOdometry(angle/2);
-            sim.move(joint, motorOdometry);
-            updateMotorOdometry(angle/2);
-            sim.move(joint, motorOdometry);
-        } else {
-            updateMotorOdometry(angle);
-            sim.move(joint, motorOdometry);
-        }*/
 
         int fraction = Math.round(angle/20);
 
@@ -57,5 +51,9 @@ public class Chamber {
 
     public void fixChamberToFloor() {
         sim.fixChamberToFloor(dummy2);
+    }
+
+    public float getAbsMotorOdometry() {
+        return absMotorOdometry;
     }
 }
