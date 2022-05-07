@@ -30,7 +30,6 @@ public class Lappa {
         c.relativeRotateChamber(angle);
         if (!isValid()) {
             c.relativeRotateChamber(-angle);
-            isRedFixed = !isRedFixed;
         } else {
             ArrayList<Point3D> points = c.getPointsOnArc();
             world.updateCoverage(points);

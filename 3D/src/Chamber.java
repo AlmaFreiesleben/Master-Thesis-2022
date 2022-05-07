@@ -33,9 +33,7 @@ public class Chamber {
     public void relativeRotateChamber(float angle) {
         pointsOnArc.clear();
 
-        if (angle > 180 || angle < -180) System.out.println("Unaxepted angle: " + angle);
-
-        int fraction = Math.round(angle/20);
+        int fraction = (Math.abs(angle) > 20) ? Math.round(Math.abs(angle)/20) : 1;
 
         for (int i = 0; i < fraction; i++) {
             updateMotorOdometry(angle/fraction);

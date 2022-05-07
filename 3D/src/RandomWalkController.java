@@ -29,6 +29,8 @@ public class RandomWalkController extends Controller {
                 float t = convertAbsAngleToTimeInMinutes(absAngle, numSteps);
                 coveragePercentage.add(Double.toString(percent));
                 time.add(Float.toString(t));
+
+                if (percent > 80) writeToFiles();
             }
 
             float motor = new Random().nextInt(361) - 180;

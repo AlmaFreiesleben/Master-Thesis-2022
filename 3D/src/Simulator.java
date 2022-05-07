@@ -52,7 +52,7 @@ public class Simulator {
 
     public void move(int joint, float angle) {
         api.simxSetJointTargetPosition(clientID, joint, (float) Math.toRadians(-angle), api.simx_opmode_blocking);
-        sleep(500);
+        sleep(1000);
     }
 
     public FloatWA getPositionOfHandle(int handle) {
@@ -77,12 +77,12 @@ public class Simulator {
         api.simxGetObjectPosition(clientID, dummy1, -1, position, api.simx_opmode_blocking);
 
         api.simxSetObjectPosition(clientID, dummy1, -1, position, api.simx_opmode_blocking);
-        sleep(500);
+        sleep(1000);
     }
 
     public void fixChamberToFloor(int dummy2) {
         api.simxSetObjectParent(clientID, dummy2, getFloor(), true, api.simx_opmode_blocking);
-        sleep(500);
+        sleep(1000);
     }
 
     public void sleep(int millis) {
