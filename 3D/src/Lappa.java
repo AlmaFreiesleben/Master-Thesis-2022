@@ -17,25 +17,49 @@ public class Lappa {
         isRedFixed = true;
     }
 
-    public void step(float angle) {
+    public void step(float angle, boolean isPosHullSide) {
         if (isRedFixed) {
-            stepChamber(redChamber, angle);
+            stepChamber(redChamber, angle, isPosHullSide);
         } else {
-            stepChamber(greenChamber, angle);
+            stepChamber(greenChamber, angle, isPosHullSide);
         }
     }
 
-    public void stepChamber(Chamber c, float angle) {
+    private void stepChamber(Chamber c, float angle, boolean isPosHullSide) {
         c.fixChamberToFloor();
         c.relativeRotateChamber(angle);
         if (!isValid()) {
             c.relativeRotateChamber(-angle);
         } else {
             ArrayList<Point3D> points = c.getPointsOnArc();
-            world.updateCoverage(points);
+            world.updateCoverage(points, isPosHullSide);
         }
         c.freeChamberFromFloor();
         isRedFixed = !isRedFixed;
+    }
+
+    public void moveToNextHullSide(boolean isPosHullSide) {
+        Point3D initialPositionRedChamber = redChamber.getCurrentPosition();
+        Point3D initialPositionGreenChamber = greenChamber.getCurrentPosition();
+        Point3D entryToNextCleaningZone = new Point3D(0, 0, 0);
+
+        if (initialPositionRedChamber.getY() > initialPositionGreenChamber.getY()) {
+            float angle = (float) initialPositionRedChamber.angle(entryToNextCleaningZone, initialPositionGreenChamber);
+            stepChamber(redChamber, -angle, isPosHullSide);
+
+            while (redChamber.getCurrentPosition().getX() > 0 && greenChamber.getCurrentPosition().getX() > 0) {
+                stepChamber(greenChamber, 180, isPosHullSide);
+                stepChamber(redChamber, -180, isPosHullSide);
+            }
+        } else {
+            float angle = (float) initialPositionRedChamber.angle(entryToNextCleaningZone, initialPositionGreenChamber);
+            stepChamber(redChamber, angle, isPosHullSide);
+
+            while (redChamber.getCurrentPosition().getX() > 0 && greenChamber.getCurrentPosition().getX() > 0) {
+                stepChamber(greenChamber, -180, isPosHullSide);
+                stepChamber(redChamber, 180, isPosHullSide);
+            }
+        }
     }
 
     public float getAbsoluteMotorMovement() {
@@ -49,7 +73,7 @@ public class Lappa {
 
     private boolean isValid() {
         Point3D p = getPositionOfMovingChamber();
-        return p.getZ() > 1;
+        return p.getZ() > 1 && p.getX() >= 0;
     }
 }
 

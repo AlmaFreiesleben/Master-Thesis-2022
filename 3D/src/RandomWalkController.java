@@ -7,16 +7,23 @@ public class RandomWalkController extends Controller {
         super(lappa, world);
     }
 
-    public void randomWalk() {
-        while (!world.isCovered()) {
+    public void clean() {
+        randomWalk(true, 15);
+        lappa.moveToNextHullSide(true);
+        randomWalk(false, 40);
+    }
+
+    private void randomWalk(boolean isPosHullSide, int perc) {
+        //while (!world.isCovered(isPosHullSide)) {
+        while (world.getCoveragePercentage() < perc) {
             float motor = new Random().nextInt(361) - 180;
-            lappa.step(motor);
+            lappa.step(motor, isPosHullSide);
             motor = new Random().nextInt(361) - 180;
-            lappa.step(motor);
+            lappa.step(motor, isPosHullSide);
         }
     }
 
-    public void randomWalkRecordResult() {
+    /*public void randomWalkRecordResult() {
         ArrayList<String> coveragePercentage = new ArrayList<>();
         ArrayList<String> time = new ArrayList<>();
         int numSteps = 0;
@@ -30,7 +37,11 @@ public class RandomWalkController extends Controller {
                 coveragePercentage.add(Double.toString(percent));
                 time.add(Float.toString(t));
 
-                if (percent > 80) writeToFiles();
+                if (percent > 80) {
+                    coverageResults.add(convertListToArray(coveragePercentage));
+                    timeResults.add(convertListToArray(time));
+                    writeToFiles();
+                }
             }
 
             float motor = new Random().nextInt(361) - 180;
@@ -38,11 +49,11 @@ public class RandomWalkController extends Controller {
             motor = new Random().nextInt(361) - 180;
             lappa.step(motor);
 
-            numSteps++;
+            numSteps += 2;
         }
 
         System.out.println("World is covered");
         coverageResults.add(convertListToArray(coveragePercentage));
         timeResults.add(convertListToArray(time));
-    }
+    }*/
 }

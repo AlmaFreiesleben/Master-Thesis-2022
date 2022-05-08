@@ -4,7 +4,8 @@ import java.util.ArrayList;
 public class World {
 
     private ArrayList<Point3D> pointsToCover;
-    private ArrayList<Point3D> unCoveredPoints;
+    private ArrayList<Point3D> unCoveredPointsPos;
+    private ArrayList<Point3D> unCoveredPointsNeg;
     private double chamberDiameter;
 
     public World(double radius, double chamberDiameter) {
@@ -12,17 +13,18 @@ public class World {
         this.chamberDiameter = chamberDiameter;
     }
 
-    public boolean isCovered() {
-        return unCoveredPoints.isEmpty();
+    public boolean isCovered(boolean isPosHullSide) {
+        return (isPosHullSide) ? unCoveredPointsPos.isEmpty() : unCoveredPointsNeg.isEmpty();
     }
 
-    public void updateCoverage(ArrayList<Point3D> points) {
+    public void updateCoverage(ArrayList<Point3D> points, boolean isPosHullSide) {
         for (Point3D p : points) {
-            updateCoverage(p);
+            updateCoverage(p, isPosHullSide);
         }
     }
 
-    private void updateCoverage(Point3D p) {
+    private void updateCoverage(Point3D p, boolean isPosHullSide) {
+        ArrayList<Point3D> unCoveredPoints = (isPosHullSide) ? unCoveredPointsPos : unCoveredPointsNeg;
         double currentShortestDistance = Integer.MAX_VALUE;
         Point3D currentNearestPoint = p;
         for (Point3D notCoveredPoint : unCoveredPoints) {
@@ -37,13 +39,14 @@ public class World {
     }
 
     public double getCoveragePercentage() {
-        double restToCover = unCoveredPoints.size();
+        double restToCover = unCoveredPointsPos.size() + unCoveredPointsNeg.size();
         return 100 - ((restToCover / pointsToCover.size()) * 100);
     }
 
     private void samplePointsToCover(double radius) {
         pointsToCover = new ArrayList<>();
-        unCoveredPoints = new ArrayList<>();
+        unCoveredPointsPos = new ArrayList<>();
+        unCoveredPointsNeg = new ArrayList<>();
 
         double x, y, z;
         int samples = 600;
@@ -64,7 +67,11 @@ public class World {
 
             if (z >= 1) {
                 pointsToCover.add(new Point3D(x, y, z));
-                unCoveredPoints.add(new Point3D(x, y, z));
+                if (x >= 0) {
+                    unCoveredPointsPos.add(new Point3D(x, y, z));
+                } else {
+                    unCoveredPointsNeg.add(new Point3D(x, y, z));
+                }
             }
         }
     }
