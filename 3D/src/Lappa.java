@@ -28,7 +28,7 @@ public class Lappa {
     private void stepChamber(Chamber c, float angle, boolean isPosHullSide) {
         c.fixChamberToFloor();
         c.relativeRotateChamber(angle);
-        if (!isValid()) {
+        if (!isValid(isPosHullSide)) {
             c.relativeRotateChamber(-angle);
         } else {
             ArrayList<Point3D> points = c.getPointsOnArc();
@@ -71,9 +71,10 @@ public class Lappa {
         return moving.getCurrentPosition();
     }
 
-    private boolean isValid() {
+    private boolean isValid(boolean isPosHullSide) {
         Point3D p = getPositionOfMovingChamber();
-        return p.getZ() > 1 && p.getX() >= 0;
+        if (isPosHullSide) return p.getZ() > 1 && p.getX() >= 0;
+        else return p.getZ() > 1 && p.getX() < 0;
     }
 }
 
