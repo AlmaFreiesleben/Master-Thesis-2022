@@ -1,5 +1,4 @@
 import javafx.geometry.Point3D;
-
 import java.util.ArrayList;
 
 public class Chamber {

@@ -1,3 +1,4 @@
+import javafx.geometry.Point3D;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -8,46 +9,73 @@ public class RandomWalkController extends Controller {
     }
 
     public void clean() {
-        randomWalk(true, 15);
-        lappa.moveToNextHullSide(true);
-        randomWalk(false, 40);
+        randomWalk(true);
+        lappa.moveToNextHullSide(true, new Point3D(0,0,0));
+        randomWalk(false);
     }
 
-    private void randomWalk(boolean isPosHullSide, int perc) {
-        //while (!world.isCovered(isPosHullSide)) {
-        while (world.getCoveragePercentage() < perc) {
+    private void randomWalk(boolean isPosHullSide) {
+        int numSteps = 0;
+        while (!world.isCovered(isPosHullSide)) {
             float motor = new Random().nextInt(361) - 180;
             lappa.step(motor, isPosHullSide);
             motor = new Random().nextInt(361) - 180;
             lappa.step(motor, isPosHullSide);
+
+            numSteps += 2;
+
+            if (numSteps % 10 == 0) {
+                Point3D p = world.getUnCoveredPoint(isPosHullSide);
+                lappa.moveToNextHullSide(isPosHullSide, p);
+            }
         }
     }
 
-    /*public void randomWalkRecordResult() {
+    public void randomWalkRecordResult() {
         ArrayList<String> coveragePercentage = new ArrayList<>();
         ArrayList<String> time = new ArrayList<>();
         int numSteps = 0;
 
-        while (!world.isCovered()) {
+        while (!world.isCovered(true)) {
 
-            if (numSteps % 10 == 0) {
+            if (numSteps % 2 == 0) {
                 double percent = world.getCoveragePercentage();
                 float absAngle = lappa.getAbsoluteMotorMovement();
                 float t = convertAbsAngleToTimeInMinutes(absAngle, numSteps);
                 coveragePercentage.add(Double.toString(percent));
                 time.add(Float.toString(t));
 
-                if (percent > 80) {
-                    coverageResults.add(convertListToArray(coveragePercentage));
-                    timeResults.add(convertListToArray(time));
-                    writeToFiles();
-                }
+                Point3D p = world.getUnCoveredPoint(true);
+                numSteps += lappa.moveToNextHullSide(true, p);
             }
 
             float motor = new Random().nextInt(361) - 180;
-            lappa.step(motor);
+            lappa.step(motor, true);
             motor = new Random().nextInt(361) - 180;
-            lappa.step(motor);
+            lappa.step(motor, true);
+
+            numSteps += 2;
+        }
+
+        numSteps += lappa.moveToNextHullSide(true, new Point3D(0,0,0));
+
+        while (!world.isCovered(false)) {
+
+            if (numSteps % 2 == 0) {
+                double percent = world.getCoveragePercentage();
+                float absAngle = lappa.getAbsoluteMotorMovement();
+                float t = convertAbsAngleToTimeInMinutes(absAngle, numSteps);
+                coveragePercentage.add(Double.toString(percent));
+                time.add(Float.toString(t));
+
+                Point3D p = world.getUnCoveredPoint(false);
+                numSteps += lappa.moveToNextHullSide(false, p);
+            }
+
+            float motor = new Random().nextInt(361) - 180;
+            lappa.step(motor, false);
+            motor = new Random().nextInt(361) - 180;
+            lappa.step(motor, false);
 
             numSteps += 2;
         }
@@ -55,5 +83,5 @@ public class RandomWalkController extends Controller {
         System.out.println("World is covered");
         coverageResults.add(convertListToArray(coveragePercentage));
         timeResults.add(convertListToArray(time));
-    }*/
+    }
 }

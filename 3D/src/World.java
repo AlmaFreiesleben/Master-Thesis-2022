@@ -1,5 +1,6 @@
 import javafx.geometry.Point3D;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class World {
 
@@ -13,8 +14,12 @@ public class World {
         this.chamberDiameter = chamberDiameter;
     }
 
-    public boolean isCovered(boolean isPosHullSide) {
+    /*public boolean isCovered(boolean isPosHullSide) {
         return (isPosHullSide) ? unCoveredPointsPos.isEmpty() : unCoveredPointsNeg.isEmpty();
+    }*/
+
+    public boolean isCovered(boolean isPosHullSide) {
+        return (isPosHullSide) ? unCoveredPointsPos.size() < 20 : unCoveredPointsNeg.size() < 20;
     }
 
     public void updateCoverage(ArrayList<Point3D> points, boolean isPosHullSide) {
@@ -38,6 +43,12 @@ public class World {
         System.out.println(getCoveragePercentage());
     }
 
+    public Point3D getUnCoveredPoint(boolean isPosHullSide) {
+        ArrayList<Point3D> unCoveredPoints = (isPosHullSide) ? unCoveredPointsPos : unCoveredPointsNeg;
+        int index = new Random().nextInt(unCoveredPoints.size());
+        return unCoveredPoints.get(index);
+    }
+
     public double getCoveragePercentage() {
         double restToCover = unCoveredPointsPos.size() + unCoveredPointsNeg.size();
         return 100 - ((restToCover / pointsToCover.size()) * 100);
@@ -49,7 +60,7 @@ public class World {
         unCoveredPointsNeg = new ArrayList<>();
 
         double x, y, z;
-        int samples = 600;
+        int samples = 400;
         double phi = Math.PI * (3. - Math.sqrt(5.));
 
         for (int i = 0; i < samples ; i++) {
