@@ -56,6 +56,8 @@ public class Lappa {
             } else {
                 stepChamber(greenChamber, 180, isPosHullSide);
                 stepChamber(redChamber, -180, isPosHullSide);
+                stepChamber(greenChamber, 180, isPosHullSide);
+                stepChamber(redChamber, -180, isPosHullSide);
                 numStep += 2;
             }
         } else {
@@ -70,6 +72,8 @@ public class Lappa {
                     numStep += 2;
                 }
             } else {
+                stepChamber(greenChamber, -180, isPosHullSide);
+                stepChamber(redChamber, 180, isPosHullSide);
                 stepChamber(greenChamber, -180, isPosHullSide);
                 stepChamber(redChamber, 180, isPosHullSide);
                 numStep += 2;
@@ -89,8 +93,8 @@ public class Lappa {
 
     private boolean isValid(boolean isPosHullSide) {
         Point3D p = getPositionOfMovingChamber();
-        if (isPosHullSide) return p.getZ() >= 1 && p.getX() >= 0;
-        else return p.getZ() >= 1 && p.getX() < 0;
+        if (isPosHullSide) return p.getZ() > 0 && p.getX() >= 0;
+        else return p.getZ() > 0 && p.getX() < 0;
     }
 }
 

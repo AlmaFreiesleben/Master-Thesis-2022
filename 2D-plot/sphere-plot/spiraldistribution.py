@@ -4,7 +4,7 @@ import math
 xs = []
 ys = []
 zs = []
-N = 600
+N = 1000
 s = 3.6/math.sqrt(N)
 dz = 2.0/N
 longtitude = 0

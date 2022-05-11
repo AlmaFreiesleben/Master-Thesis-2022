@@ -14,12 +14,8 @@ public class World {
         this.chamberDiameter = chamberDiameter;
     }
 
-    /*public boolean isCovered(boolean isPosHullSide) {
-        return (isPosHullSide) ? unCoveredPointsPos.isEmpty() : unCoveredPointsNeg.isEmpty();
-    }*/
-
     public boolean isCovered(boolean isPosHullSide) {
-        return (isPosHullSide) ? unCoveredPointsPos.size() < 20 : unCoveredPointsNeg.size() < 20;
+        return (isPosHullSide) ? unCoveredPointsPos.isEmpty() : unCoveredPointsNeg.isEmpty();
     }
 
     public void updateCoverage(ArrayList<Point3D> points, boolean isPosHullSide) {
@@ -39,7 +35,7 @@ public class World {
                 currentNearestPoint = notCoveredPoint;
             }
         }
-        if (currentShortestDistance < chamberDiameter) unCoveredPoints.remove(currentNearestPoint);
+        if (currentShortestDistance <= chamberDiameter) unCoveredPoints.remove(currentNearestPoint);
         System.out.println(getCoveragePercentage());
     }
 
@@ -60,7 +56,7 @@ public class World {
         unCoveredPointsNeg = new ArrayList<>();
 
         double x, y, z;
-        int samples = 400;
+        int samples = 300;
         double phi = Math.PI * (3. - Math.sqrt(5.));
 
         for (int i = 0; i < samples ; i++) {
@@ -85,5 +81,8 @@ public class World {
                 }
             }
         }
+        System.out.println("size of world: " + pointsToCover.size());
+        System.out.println("pos: " + unCoveredPointsPos.size());
+        System.out.println("neg: " + unCoveredPointsNeg.size());
     }
 }
