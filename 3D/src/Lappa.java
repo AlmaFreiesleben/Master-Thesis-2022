@@ -28,6 +28,8 @@ public class Lappa {
         c.fixChamberToFloor();
         c.relativeRotateChamber(angle);
         if (!isValid(isPosHullSide)) {
+            ArrayList<Point3D> points = c.getPointsOnArc();
+            world.updateCoverage(points, isPosHullSide);
             c.relativeRotateChamber(-angle);
         } else {
             ArrayList<Point3D> points = c.getPointsOnArc();
@@ -93,8 +95,8 @@ public class Lappa {
 
     private boolean isValid(boolean isPosHullSide) {
         Point3D p = getPositionOfMovingChamber();
-        if (isPosHullSide) return p.getZ() > 0 && p.getX() >= 0;
-        else return p.getZ() > 0 && p.getX() < 0;
+        if (isPosHullSide) return p.getZ() >= 0.5 && p.getX() >= 0;
+        else return p.getZ() >= 0.5 && p.getX() < 0;
     }
 }
 

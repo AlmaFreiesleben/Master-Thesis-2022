@@ -14,8 +14,12 @@ public class World {
         this.chamberDiameter = chamberDiameter;
     }
 
-    public boolean isCovered(boolean isPosHullSide) {
+    /*public boolean isCovered(boolean isPosHullSide) {
         return (isPosHullSide) ? unCoveredPointsPos.isEmpty() : unCoveredPointsNeg.isEmpty();
+    }*/
+
+    public boolean isCovered(boolean isPosHullSide) {
+        return (isPosHullSide) ? unCoveredPointsPos.size() <= 10 : unCoveredPointsNeg.size() <= 10;
     }
 
     public void updateCoverage(ArrayList<Point3D> points, boolean isPosHullSide) {
@@ -56,7 +60,7 @@ public class World {
         unCoveredPointsNeg = new ArrayList<>();
 
         double x, y, z;
-        int samples = 300;
+        int samples = 900;
         double phi = Math.PI * (3. - Math.sqrt(5.));
 
         for (int i = 0; i < samples ; i++) {

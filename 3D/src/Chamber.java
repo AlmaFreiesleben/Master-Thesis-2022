@@ -32,7 +32,7 @@ public class Chamber {
     public void relativeRotateChamber(float angle) {
         pointsOnArc.clear();
 
-        int fraction = (Math.abs(angle) > 20) ? Math.round(Math.abs(angle)/20) : 1;
+        int fraction = (Math.abs(angle) >= 20) ? Math.round(Math.abs(angle)/20) : 1;
 
         for (int i = 0; i < fraction; i++) {
             updateMotorOdometry(angle/fraction);
