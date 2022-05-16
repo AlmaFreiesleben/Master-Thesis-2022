@@ -19,11 +19,11 @@ def plot_mean():
     plt.plot(time_data[0], cov_data[0], linewidth=2, color='darkcyan')
 
 def plot_labels():
-    plt.title('Snake Walk (5x10)', **mono_font)
+    plt.title('Snake Walk (6x11)', **mono_font)
     plt.xlabel("Time in minutes", **mono_font)
     plt.ylabel("Coverage in percent", **mono_font)
     plt.grid()
-    plt.savefig("graph_snake_5x10_1_run.png")
+    plt.savefig("graph_snake_6x11_1_run.png")
     plt.show()
 
 plt.xlim(right=3000)
