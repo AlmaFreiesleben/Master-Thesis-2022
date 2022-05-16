@@ -37,7 +37,7 @@ public class RandomWalkController extends Controller {
         while (!world.isCovered(true)) {
 
             double roundedPercent = Math.rint(world.getCoveragePercentage());
-            if (roundedPercent % 5 == 0) {
+            if (roundedPercent % 2 == 0) {
                 double percent = world.getCoveragePercentage();
                 float absAngle = lappa.getAbsoluteMotorMovement();
                 float t = convertAbsAngleToTimeInMinutes(absAngle, numSteps);
@@ -58,7 +58,7 @@ public class RandomWalkController extends Controller {
         while (!world.isCovered(false)) {
 
             double roundedPercent = Math.rint(world.getCoveragePercentage());
-            if (roundedPercent % 5 == 0) {
+            if (roundedPercent % 2 == 0) {
                 double percent = world.getCoveragePercentage();
                 float absAngle = lappa.getAbsoluteMotorMovement();
                 float t = convertAbsAngleToTimeInMinutes(absAngle, numSteps);
@@ -73,6 +73,12 @@ public class RandomWalkController extends Controller {
 
             numSteps += 2;
         }
+
+        double percent = world.getCoveragePercentage();
+        float absAngle = lappa.getAbsoluteMotorMovement();
+        float t = convertAbsAngleToTimeInMinutes(absAngle, numSteps);
+        coveragePercentage.add(Double.toString(percent));
+        time.add(Float.toString(t));
 
         System.out.println("World is covered");
         coverageResults.add(convertListToArray(coveragePercentage));
