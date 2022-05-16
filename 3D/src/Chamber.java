@@ -1,4 +1,5 @@
-import coppelia.FloatWA;
+import javafx.geometry.Point3D;
+import java.util.ArrayList;
 
 public class Chamber {
     private final int joint;
@@ -6,6 +7,8 @@ public class Chamber {
     private final int dummy2;
     private final Simulator sim;
     private float motorOdometry;
+    private ArrayList<Point3D> pointsOnArc;
+    private float absMotorOdometry;
 
     public Chamber(int joint, int dummy1, int dummy2, Simulator sim) {
         this.joint = joint;
@@ -13,34 +16,30 @@ public class Chamber {
         this.dummy2 = dummy2;
         this.sim = sim;
         motorOdometry = 0;
+        pointsOnArc = new ArrayList<>();
+        absMotorOdometry = 0;
     }
 
-    public int getJoint() { return joint; }
+    public Point3D getCurrentPosition() { return sim.getPositionOfObject(dummy1); }
 
     public void updateMotorOdometry(float angle) {
         motorOdometry += angle;
+        absMotorOdometry += Math.abs(angle);
     }
+
+    public ArrayList<Point3D> getPointsOnArc() { return pointsOnArc; }
 
     public void relativeRotateChamber(float angle) {
-        if (angle > 180 || angle < -180) System.out.println("Unaxepted angle: " + angle);
-        updateMotorOdometry(angle/2);
-        sim.move(joint, motorOdometry);
-        updateMotorOdometry(angle/2);
-        sim.move(joint, motorOdometry);
-    }
+        pointsOnArc.clear();
 
-    public void relativeRotateChamberOneMove(float angle) {
-        if (Math.abs(angle) == 180f) {
-            relativeRotateChamber(angle);
-        } else {
-            updateMotorOdometry(angle);
+        int fraction = (Math.abs(angle) >= 20) ? Math.round(Math.abs(angle)/20) : 1;
+
+        for (int i = 0; i < fraction; i++) {
+            updateMotorOdometry(angle/fraction);
             sim.move(joint, motorOdometry);
+            Point3D p = getCurrentPosition();
+            pointsOnArc.add(p);
         }
-    }
-
-    public float getXOfChamber() {
-        FloatWA pos = sim.getPositionOfHandle(joint);
-        return pos.getArray()[0];
     }
 
     public void freeChamberFromFloor() {
@@ -49,5 +48,9 @@ public class Chamber {
 
     public void fixChamberToFloor() {
         sim.fixChamberToFloor(dummy2);
+    }
+
+    public float getAbsMotorOdometry() {
+        return absMotorOdometry;
     }
 }
