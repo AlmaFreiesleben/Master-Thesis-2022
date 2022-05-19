@@ -19,13 +19,13 @@ def plot_mean():
     plt.plot(time_data[0], cov_data[0], linewidth=2, color='darkcyan')
 
 def plot_labels():
-    plt.title('Snake Walk (3x6)', **mono_font)
+    plt.title('Random Walk', **mono_font)
     plt.xlabel("Time in minutes", **mono_font)
     plt.ylabel("Coverage in percent", **mono_font)
     plt.grid()
-    plt.savefig("graph_snake_3x6_1_run_95.png")
+    plt.savefig("graph_random_sphere.png")
     plt.show()
 
-plt.xlim(right=400)
+plt.xlim(right=100)
 plot_mean()
 plot_labels()

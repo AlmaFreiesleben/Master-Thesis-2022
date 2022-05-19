@@ -49,4 +49,34 @@ public class RandomWalkController extends Controller {
         coverageResults.add(convertListToArray(coveragePercentage));
         timeResults.add(convertListToArray(time));
     }
+
+    public void randomWalkRecord95Result() {
+        ArrayList<String> coveragePercentage = new ArrayList<>();
+        ArrayList<String> time = new ArrayList<>();
+        int numSteps = 0;
+
+        while (!world.isCovered()) {
+
+            double percent = world.getCoveragePercentage();
+            if (percent >= 95) {
+                float absAngle = lappa.getAbsoluteMotorMovement();
+                float t = convertAbsAngleToTimeInMinutes(absAngle, numSteps);
+                coveragePercentage.add(Double.toString(percent));
+                time.add(Float.toString(t));
+                coverageResults.add(convertListToArray(coveragePercentage));
+                timeResults.add(convertListToArray(time));
+                return;
+            }
+
+            float motor = new Random().nextInt(361) - 180;
+
+            if (lappa.getIsRedFixed()) {
+                lappa.stepWithoutSim(motor);
+            } else {
+                lappa.stepWithoutSim(motor);
+            }
+
+            numSteps++;
+        }
+    }
 }

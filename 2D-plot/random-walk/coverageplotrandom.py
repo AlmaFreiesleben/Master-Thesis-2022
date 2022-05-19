@@ -18,21 +18,21 @@ with open('time.csv') as csvfile:
 x = []
 y = []
 def compute_mean():
-    for i in range(30):
+    for i in range(80):
         mean_time = (time_data[0][i] + time_data[1][i] + time_data[2][i] + time_data[3][i] + time_data[4][i] + time_data[5][i] + time_data[6][i] + time_data[7][i] + time_data[8][i] + time_data[9][i]) / 10
         x.append(mean_time)
         mean_cov = (cov_data[0][i] + cov_data[1][i] + cov_data[2][i] + cov_data[3][i] + cov_data[4][i] + cov_data[5][i] + cov_data[6][i] + cov_data[7][i] + cov_data[8][i] + cov_data[9][i]) / 10
         y.append(mean_cov)
 
-    for i in range(20):
-        j = 40
-        mean_time = (time_data[5][i+j] + time_data[3][i+j] + time_data[0][i+j]) / 3
+    for i in range(60):
+        j = 100
+        mean_time = (time_data[2][i+j] + time_data[1][i+j] + time_data[9][i+j]) / 3
         x.append(mean_time)
-        mean_cov = (cov_data[5][i+j] + cov_data[3][i+j] + cov_data[0][i+j]) / 3
+        mean_cov = (cov_data[2][i+j] + cov_data[1][i+j] + cov_data[9][i+j]) / 3
         y.append(mean_cov)
 
-    x.append(time_data[5][len(time_data[5])-1])
-    y.append(cov_data[5][len(cov_data[5])-1])  
+    x.append(time_data[2][len(time_data[2])-1])
+    y.append(cov_data[2][len(cov_data[2])-1])  
 
 def plot_data():
     for i in range(10):
@@ -43,14 +43,14 @@ def plot_mean():
     plt.plot(x, y, linewidth=2, color='m')
 
 def plot_labels():
-    plt.title('Random Walk Centered Start (3x3)', **mono_font)
+    plt.title('Random Walk Centered Start (3x6)', **mono_font)
     plt.xlabel("Time in minutes", **mono_font)
     plt.ylabel("Coverage in percent", **mono_font)
     plt.grid()
-    plt.savefig("graph_random_3x3_center_10_runs.png")
+    plt.savefig("graph_random_3x6_center_10_runs_95.png")
     plt.show()
 
-plt.xlim(right=200)
+plt.xlim(right=400)
 plot_data()
 plot_mean()
 plot_labels()

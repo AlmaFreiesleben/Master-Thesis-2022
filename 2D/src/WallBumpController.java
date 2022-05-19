@@ -53,4 +53,36 @@ public class WallBumpController extends Controller {
         coverageResults.add(convertListToArray(coveragePercentage));
         timeResults.add(convertListToArray(time));
     }
+
+    public void wallBumpRecord95Result() {
+        ArrayList<String> coveragePercentage = new ArrayList<>();
+        ArrayList<String> time = new ArrayList<>();
+        int numSteps = 0;
+        boolean isFalling = false;
+
+        while (!world.isCovered()) {
+
+            double percent = world.getCoveragePercentage();
+            if (percent >= 95) {
+                float absAngle = lappa.getAbsoluteMotorMovement();
+                float t = convertAbsAngleToTimeInMinutes(absAngle, numSteps);
+                coveragePercentage.add(Double.toString(percent));
+                time.add(Float.toString(t));
+                coverageResults.add(convertListToArray(coveragePercentage));
+                timeResults.add(convertListToArray(time));
+                return;
+            }
+
+            float motor = 95;
+            if (isFalling) motor = new Random().nextInt(361) - 180;
+
+            if (lappa.getIsRedFixed()) {
+                isFalling = lappa.stepWithoutSim(motor);
+            } else {
+                isFalling = lappa.stepWithoutSim(-motor);
+            }
+
+            numSteps++;
+        }
+    }
 }
