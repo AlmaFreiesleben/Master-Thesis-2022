@@ -18,7 +18,7 @@ public class Simulator {
         if (clientID != -1)
         {
             IntW objectHandles = new IntW(1);
-            String[] joints = new String[]{"Floor", "Middle_Joint", "Right_Middle_Joint", "Right_Joint", "Right_Dummy_1", "Right_Dummy_2", "Left_Middle_Joint", "Left_Joint", "Left_Dummy_1", "Left_Dummy_2"};
+            String[] joints = new String[]{"Floor", "Middle_Joint", "Green_Middle_Joint", "Green_Joint", "Green_Dummy_1", "Green_Dummy_2", "Red_Middle_Joint", "Red_Joint", "Red_Dummy_1", "Red_Dummy_2"};
 
             for (int i = 0; i < joints.length; i++) {
                 api.simxGetObjectHandle(clientID, joints[i], objectHandles, api.simx_opmode_blocking);
