@@ -28,7 +28,7 @@ df = pd.DataFrame(data, columns = ['Algorithm', 'Time in minutes'])
 
 #adding color
 pal = sns.color_palette("Paired")
-f, ax = plt.subplots(figsize=(7, 5))
+f, ax = plt.subplots(figsize=(6, 3))
 dy="Algorithm"
 dx="Time in minutes"
 ort="h"

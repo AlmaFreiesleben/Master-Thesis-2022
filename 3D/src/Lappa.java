@@ -59,7 +59,6 @@ public class Lappa {
                 stepChamber(greenChamber, 180, isPosHullSide);
                 stepChamber(redChamber, -180, isPosHullSide);
                 stepChamber(greenChamber, 180, isPosHullSide);
-                stepChamber(redChamber, -180, isPosHullSide);
                 numStep += 2;
             }
         } else {
@@ -77,7 +76,6 @@ public class Lappa {
                 stepChamber(greenChamber, -180, isPosHullSide);
                 stepChamber(redChamber, 180, isPosHullSide);
                 stepChamber(greenChamber, -180, isPosHullSide);
-                stepChamber(redChamber, 180, isPosHullSide);
                 numStep += 2;
             }
         }
