@@ -10,7 +10,7 @@ public class RandomWalkController extends Controller {
 
     public void clean() {
         randomWalk(true);
-        lappa.moveToNextHullSide(true, new Point3D(0,0,0));
+        lappa.moveToTargetPoint(true, new Point3D(0,0,2.5));
         randomWalk(false);
     }
 
@@ -24,7 +24,7 @@ public class RandomWalkController extends Controller {
             double percent = Math.rint(world.getCoveragePercentage());
             if (percent % 5 == 0) {
                 Point3D p = world.getUnCoveredPoint(isPosHullSide);
-                lappa.moveToNextHullSide(isPosHullSide, p);
+                lappa.moveToTargetPoint(isPosHullSide, p);
             }
         }
     }
@@ -51,9 +51,15 @@ public class RandomWalkController extends Controller {
             lappa.step(motor, true);
 
             numSteps += 2;
+
+            double percent = Math.rint(world.getCoveragePercentage());
+            if (percent % 5 == 0 && percent < 50) {
+                Point3D p = world.getUnCoveredPoint(true);
+                lappa.moveToTargetPoint(true, p);
+            }
         }
 
-        numSteps += lappa.moveToNextHullSide(true, new Point3D(0,0,0));
+        numSteps += lappa.moveToTargetPoint(true, new Point3D(0,0,2.5));
 
         while (!world.isCovered(false)) {
 
@@ -72,6 +78,12 @@ public class RandomWalkController extends Controller {
             lappa.step(motor, false);
 
             numSteps += 2;
+
+            double percent = Math.rint(world.getCoveragePercentage());
+            if (percent % 5 == 0 && percent < 100) {
+                Point3D p = world.getUnCoveredPoint(false);
+                lappa.moveToTargetPoint(false, p);
+            }
         }
 
         double percent = world.getCoveragePercentage();

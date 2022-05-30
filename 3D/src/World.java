@@ -10,7 +10,7 @@ public class World {
     private double chamberDiameter;
 
     public World(double radius, double chamberDiameter) {
-        samplePointsToCover(radius);
+        samplePointsToCover();
         this.chamberDiameter = chamberDiameter;
     }
 
@@ -19,7 +19,7 @@ public class World {
     }*/
 
     public boolean isCovered(boolean isPosHullSide) {
-        return (isPosHullSide) ? unCoveredPointsPos.size() <= 10 : unCoveredPointsNeg.size() <= 10;
+        return (isPosHullSide) ? unCoveredPointsPos.size() <= 8 : unCoveredPointsNeg.size() <= 12;
     }
 
     public void updateCoverage(ArrayList<Point3D> points, boolean isPosHullSide) {
@@ -40,7 +40,6 @@ public class World {
             }
         }
         if (currentShortestDistance <= chamberDiameter) unCoveredPoints.remove(currentNearestPoint);
-        System.out.println(getCoveragePercentage());
     }
 
     public Point3D getUnCoveredPoint(boolean isPosHullSide) {
@@ -54,33 +53,31 @@ public class World {
         return 100 - ((restToCover / pointsToCover.size()) * 100);
     }
 
-    private void samplePointsToCover(double radius) {
+    private void samplePointsToCover() {
         pointsToCover = new ArrayList<>();
         unCoveredPointsPos = new ArrayList<>();
         unCoveredPointsNeg = new ArrayList<>();
 
         double x, y, z;
-        int samples = 900;
-        double phi = Math.PI * (3. - Math.sqrt(5.));
+        int N = 900;
+        double L = Math.sqrt(N*Math.PI);
 
-        for (int i = 0; i < samples ; i++) {
-            y = 1 - (i / (float) (samples - 1)) * 2;
-            double r = Math.sqrt(1 - y * y);
+        for (int k = 1; k <= N ; k++) {
+            double h_k = 1-((float)(2*k-1)/N);
+            double phi = Math.acos(h_k);
+            double theta = L*phi;
 
-            double theta = phi * i;
+            // Convert from spherical to cartesian points
+            x = 2.5 * Math.sin(phi) * Math.cos(theta);
+            y = 2.5 * Math.sin(phi) * Math.sin(theta);
+            z = 2.5 * Math.cos(phi);
 
-            x = Math.cos(theta) * r;
-            z = Math.sin(theta) * r;
-
-            x *= radius;
-            y *= radius;
-            z *= radius;
-
-            if (z >= 1) {
+            if (z > 1) {
                 pointsToCover.add(new Point3D(x, y, z));
-                if (x >= 0) {
+                if (x > 0) {
                     unCoveredPointsPos.add(new Point3D(x, y, z));
-                } else {
+                }
+                if (x < 0) {
                     unCoveredPointsNeg.add(new Point3D(x, y, z));
                 }
             }

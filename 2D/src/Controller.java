@@ -43,6 +43,8 @@ public class Controller {
     }
 
     protected float convertAbsAngleToTimeInMinutes(float absAngle, int numSteps) {
-        return (numSteps * 3 + absAngle * 1/2) / 60;
+        float timeToFixFree = numSteps * 3;
+        float timeToClean = absAngle/18;
+        return (timeToFixFree + timeToClean) / 60;
     }
 }

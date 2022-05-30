@@ -20,7 +20,9 @@ public class Chamber {
         absMotorOdometry = 0;
     }
 
-    public Point3D getCurrentPosition() { return sim.getPositionOfObject(dummy1); }
+    public Point3D getCurrentRoundedPosition() { return sim.getPositionOfObject(dummy1); }
+
+    public Point3D getCurrentPosition() { return sim.getPrecisePositionOfObject(dummy1); }
 
     public void updateMotorOdometry(float angle) {
         motorOdometry += angle;
@@ -37,7 +39,7 @@ public class Chamber {
         for (int i = 0; i < fraction; i++) {
             updateMotorOdometry(angle/fraction);
             sim.move(joint, motorOdometry);
-            Point3D p = getCurrentPosition();
+            Point3D p = getCurrentRoundedPosition();
             pointsOnArc.add(p);
         }
     }

@@ -5,9 +5,9 @@ public class Main
         Simulator sim = new Simulator();
         World world = new World(2.5, 0.4);
         Lappa lappa = new Lappa(sim, world);
-        RandomWalkController c = new RandomWalkController(lappa, world);
-        c.randomWalkRecordResult();
-        c.writeToFiles();
+        MoveToTargetController c = new MoveToTargetController(lappa, world);
+        c.moveToTargetFromRandomPosition();
+        //c.writeToFiles();
         sim.stopSimulation();
     }
 }
