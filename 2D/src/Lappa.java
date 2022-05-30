@@ -1,6 +1,5 @@
 import coppelia.FloatWA;
 import javafx.geometry.Point2D;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +17,6 @@ public class Lappa {
     private final double arenaW;
     private Point2D currentFixedPosition;
 
-    // TODO TEST VARIABLES REMOVE!!!
     double test_x = 0;
     double test_y = 0;
     int cnt = 1;
@@ -129,8 +127,7 @@ public class Lappa {
     }
 
     private boolean isFallingOfArena(Point2D nextPoint) {
-        return Math.abs(nextPoint.getX()) > arenaW || Math.abs(nextPoint.getY()) > arenaH;
-        //return Math.abs(nextPoint.getX()) > arenaW/2 || Math.abs(nextPoint.getY()) > arenaH/2;
+        return Math.abs(nextPoint.getX()) > arenaW/2 || Math.abs(nextPoint.getY()) > arenaH/2;
     }
 
     private Point2D getFixedCenter(Chamber fixed, boolean isRecordingResults) {

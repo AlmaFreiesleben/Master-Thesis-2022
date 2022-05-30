@@ -109,8 +109,11 @@ public class World {
     }
 
     public void createSamplingOfPointsPositiveQuadrant() {
+        unCoveredPoints.clear();
         for (Point2D p : pointsToCover) {
-            p.add(W, H);
+            unCoveredPoints.add(p.add(W/2, H/2));
         }
+        pointsToCover.clear();
+        pointsToCover.addAll(unCoveredPoints);
     }
 }

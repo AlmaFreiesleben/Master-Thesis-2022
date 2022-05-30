@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.List;
 
 public class SnakeController extends Controller{
 
@@ -42,7 +41,7 @@ public class SnakeController extends Controller{
         float turn = 0;
         int numSteps = 0;
 
-        while (world.getCoveragePercentage() < 97) {
+        while (!world.isCovered()) {
 
             record(numSteps);
 
