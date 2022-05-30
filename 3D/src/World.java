@@ -40,7 +40,6 @@ public class World {
             }
         }
         if (currentShortestDistance <= chamberDiameter) unCoveredPoints.remove(currentNearestPoint);
-        System.out.println(getCoveragePercentage());
     }
 
     public Point3D getUnCoveredPoint(boolean isPosHullSide) {

@@ -70,6 +70,11 @@ public class Simulator {
         return new Point3D(x, y, z);
     }
 
+    public Point3D getPrecisePositionOfObject(int objectHandle) {
+        float[] pos = getPositionOfHandle(objectHandle).getArray();
+        return new Point3D(pos[0], pos[1], pos[2]);
+    }
+
     public void freeChamberFromFloor(int dummy1, int dummy2) {
         api.simxSetObjectParent(clientID, dummy2, dummy1, true, api.simx_opmode_blocking);
 
